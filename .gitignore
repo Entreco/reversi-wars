@@ -38,3 +38,17 @@ captures/
 
 # Keystore files
 *.jks
+
+Reversi/\.idea/copyright/
+
+Reversi/\.idea/dictionaries/
+
+Reversi/\.idea/inspectionProfiles/
+
+Reversi/\.idea/
+
+Reversi/gradlew
+
+Reversi/gradlew\.bat
+
+Reversi/gradle/wrapper/
