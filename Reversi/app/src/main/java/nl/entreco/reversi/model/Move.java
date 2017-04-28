@@ -2,11 +2,11 @@ package nl.entreco.reversi.model;
 
 import java.util.ArrayList;
 
-class Move extends ArrayList<Integer> {
+public class Move extends ArrayList<Integer> {
 
     private static final long serialVersionUID = 6405366992958717476L;
 
-    public Move() {
+    Move() {
     }
 
     public Move(int row, int col) {
@@ -14,10 +14,10 @@ class Move extends ArrayList<Integer> {
         add(col);
     }
 
-    public int getRow(){
+    int getRow(){
         return get(0);
     }
-    public int getCol(){
+    int getCol(){
         return get(1);
     }
 

@@ -1,41 +1,110 @@
 package nl.entreco.reversi.model;
 
-import android.support.annotation.IntDef;
+import android.support.annotation.NonNull;
 
-import java.lang.annotation.Retention;
 import java.util.ArrayList;
 import java.util.List;
 
-import static java.lang.annotation.RetentionPolicy.SOURCE;
+public class Board extends ArrayList<Stone>{
 
-public class Board {
-
-    @Retention(SOURCE)
-    @IntDef({WHITE, BLACK, EMPTY})
-    public @interface Stone {}
-
-    static final @Stone int WHITE = -1;
-    static final @Stone int BLACK = 1;
-    static final @Stone int EMPTY = 0;
+    @Override
+    public Stone get(int index) {
+        int row = index / ROWS;
+        int col = index % COLS;
+        return board[row][col];
+    }
 
     private int ROWS = 8;
-
     private int COLS = 8;
-    private @Stone int[][] board = new int[ROWS][COLS];
+    private Stone[][] board = new Stone[ROWS][COLS];
 
-    void start() {
-        set(new Move(3,3), WHITE);
-        set(new Move(4,4), WHITE);
-        set(new Move(3,4), BLACK);
-        set(new Move(4,3), BLACK);
+    public Board(){
+        applyWithoutChecks(new Move(0, 0), Stone.EMPTY);
+        applyWithoutChecks(new Move(0, 1), Stone.EMPTY);
+        applyWithoutChecks(new Move(0, 2), Stone.EMPTY);
+        applyWithoutChecks(new Move(0, 3), Stone.EMPTY);
+        applyWithoutChecks(new Move(0, 4), Stone.EMPTY);
+        applyWithoutChecks(new Move(0, 5), Stone.EMPTY);
+        applyWithoutChecks(new Move(0, 6), Stone.EMPTY);
+        applyWithoutChecks(new Move(0, 7), Stone.EMPTY);
+
+        applyWithoutChecks(new Move(1, 0), Stone.EMPTY);
+        applyWithoutChecks(new Move(1, 1), Stone.EMPTY);
+        applyWithoutChecks(new Move(1, 2), Stone.EMPTY);
+        applyWithoutChecks(new Move(1, 3), Stone.EMPTY);
+        applyWithoutChecks(new Move(1, 4), Stone.EMPTY);
+        applyWithoutChecks(new Move(1, 5), Stone.EMPTY);
+        applyWithoutChecks(new Move(1, 6), Stone.EMPTY);
+        applyWithoutChecks(new Move(1, 7), Stone.EMPTY);
+
+        applyWithoutChecks(new Move(2, 0), Stone.EMPTY);
+        applyWithoutChecks(new Move(2, 1), Stone.EMPTY);
+        applyWithoutChecks(new Move(2, 2), Stone.EMPTY);
+        applyWithoutChecks(new Move(2, 3), Stone.EMPTY);
+        applyWithoutChecks(new Move(2, 4), Stone.EMPTY);
+        applyWithoutChecks(new Move(2, 5), Stone.EMPTY);
+        applyWithoutChecks(new Move(2, 6), Stone.EMPTY);
+        applyWithoutChecks(new Move(2, 7), Stone.EMPTY);
+
+        applyWithoutChecks(new Move(3, 0), Stone.EMPTY);
+        applyWithoutChecks(new Move(3, 1), Stone.EMPTY);
+        applyWithoutChecks(new Move(3, 2), Stone.EMPTY);
+        applyWithoutChecks(new Move(3, 3), Stone.EMPTY);
+        applyWithoutChecks(new Move(3, 4), Stone.EMPTY);
+        applyWithoutChecks(new Move(3, 5), Stone.EMPTY);
+        applyWithoutChecks(new Move(3, 6), Stone.EMPTY);
+        applyWithoutChecks(new Move(3, 7), Stone.EMPTY);
+
+        applyWithoutChecks(new Move(4, 0), Stone.EMPTY);
+        applyWithoutChecks(new Move(4, 1), Stone.EMPTY);
+        applyWithoutChecks(new Move(4, 2), Stone.EMPTY);
+        applyWithoutChecks(new Move(4, 3), Stone.EMPTY);
+        applyWithoutChecks(new Move(4, 4), Stone.EMPTY);
+        applyWithoutChecks(new Move(4, 5), Stone.EMPTY);
+        applyWithoutChecks(new Move(4, 6), Stone.EMPTY);
+        applyWithoutChecks(new Move(4, 7), Stone.EMPTY);
+
+        applyWithoutChecks(new Move(5, 0), Stone.EMPTY);
+        applyWithoutChecks(new Move(5, 1), Stone.EMPTY);
+        applyWithoutChecks(new Move(5, 2), Stone.EMPTY);
+        applyWithoutChecks(new Move(5, 3), Stone.EMPTY);
+        applyWithoutChecks(new Move(5, 4), Stone.EMPTY);
+        applyWithoutChecks(new Move(5, 5), Stone.EMPTY);
+        applyWithoutChecks(new Move(5, 6), Stone.EMPTY);
+        applyWithoutChecks(new Move(5, 7), Stone.EMPTY);
+
+        applyWithoutChecks(new Move(6, 0), Stone.EMPTY);
+        applyWithoutChecks(new Move(6, 1), Stone.EMPTY);
+        applyWithoutChecks(new Move(6, 2), Stone.EMPTY);
+        applyWithoutChecks(new Move(6, 3), Stone.EMPTY);
+        applyWithoutChecks(new Move(6, 4), Stone.EMPTY);
+        applyWithoutChecks(new Move(6, 5), Stone.EMPTY);
+        applyWithoutChecks(new Move(6, 6), Stone.EMPTY);
+        applyWithoutChecks(new Move(6, 7), Stone.EMPTY);
+
+        applyWithoutChecks(new Move(7, 0), Stone.EMPTY);
+        applyWithoutChecks(new Move(7, 1), Stone.EMPTY);
+        applyWithoutChecks(new Move(7, 2), Stone.EMPTY);
+        applyWithoutChecks(new Move(7, 3), Stone.EMPTY);
+        applyWithoutChecks(new Move(7, 4), Stone.EMPTY);
+        applyWithoutChecks(new Move(7, 5), Stone.EMPTY);
+        applyWithoutChecks(new Move(7, 6), Stone.EMPTY);
+        applyWithoutChecks(new Move(7, 7), Stone.EMPTY);
     }
 
-    void set(Move move, @Stone int stone) {
-        board[move.getRow()][move.getCol()] = stone;
+    public void start() {
+        applyWithoutChecks(new Move(3, 3), Stone.WHITE);
+        applyWithoutChecks(new Move(4, 4), Stone.WHITE);
+        applyWithoutChecks(new Move(3, 4), Stone.BLACK);
+        applyWithoutChecks(new Move(4, 3), Stone.BLACK);
     }
 
-    void apply(Move move, @Stone int stone) {
-        set(move, stone);
+    void applyWithoutChecks(Move move, @Stone.Value int stone) {
+        board[move.getRow()][move.getCol()] = new Stone(move.getRow(), move.getCol(), stone);
+    }
+
+    public void apply(Move move, @Stone.Value int stone) {
+        applyWithoutChecks(move, stone);
         // Look Left
         flipLeft(move, stone);
         flipRight(move, stone);
@@ -48,195 +117,150 @@ public class Board {
 
     }
 
-    private void flipMoves(boolean flip, List<Move> moves, int stone){
-        if(flip) {
-            for (final Move move : moves) {
-                set(move, stone);
-            }
+    private void flipMoves(@NonNull final List<Stone> moves) {
+        for (final Stone move : moves) {
+            move.flip();
         }
     }
 
-    private void flipLeft(Move move, @Stone int stone) {
-        boolean needsFlip = false;
-        final List<Move> positions = new ArrayList<>();
-        for(int x = move.getCol() - 1 ; x >= 0 ; x--){
-            @Stone int other = board[move.getRow()][x];
+    private boolean check(int row, int col, @Stone.Value int stone, @NonNull final List<Stone> positions){
+        if(row < 0 || row >= ROWS || col < 0 || col >= COLS) {
+            positions.clear();
+            return true;
+        }
 
-            if(other == EMPTY) {
-                needsFlip = false;
+        Stone other = board[row][col];
+
+        if (other.value() == Stone.EMPTY) {
+            positions.clear();
+            return true;
+        } else  if(other.value() == stone){
+            return true;
+        } else {
+            positions.add(other);
+        }
+        return false;
+    }
+
+    private void flipLeft(Move move, @Stone.Value int stone) {
+        final List<Stone> positions = new ArrayList<>();
+        for (int x = move.getCol() - 1; x >= 0; x--) {
+            if(check(move.getRow(), x, stone, positions)){
                 break;
-            }
-            if(other == stone){
-                needsFlip = true;
-                break;
-            }
-            else {
-                positions.add(new Move(move.getRow(), x));
             }
         }
 
-        flipMoves(needsFlip, positions, stone);
+        flipMoves(positions);
     }
 
-    private void flipRight(Move move, @Stone int stone) {
-        boolean needsFlip = false;
-        final List<Move> positions = new ArrayList<>();
+    private void flipRight(Move move, @Stone.Value int stone) {
+        final List<Stone> positions = new ArrayList<>();
 
-        for(int x = move.getCol() + 1 ; x < COLS ; x++){
-            @Stone int other = board[move.getRow()][x];
-            if(other == EMPTY) {
-                needsFlip = false;
+        for (int x = move.getCol() + 1; x < COLS; x++) {
+            if(check(move.getRow(), x, stone, positions)){
                 break;
-            }
-            if(other == stone){
-                needsFlip = true;
-                break;
-            }
-            else {
-                positions.add(new Move(move.getRow(), x));
             }
         }
 
-        flipMoves(needsFlip, positions, stone);
+        flipMoves(positions);
     }
 
-    private void flipUp(Move move, @Stone int stone) {
-        boolean needsFlip = false;
-        final List<Move> positions = new ArrayList<>();
+    private void flipUp(Move move, @Stone.Value int stone) {
+        final List<Stone> positions = new ArrayList<>();
 
-        for(int y = move.getRow() - 1 ; y >= 0 ; y--){
-            @Stone int other = board[y][move.getCol()];
-            if(other == EMPTY) {
-                needsFlip = false;
+        for (int y = move.getRow() - 1; y >= 0; y--) {
+            if(check(y, move.getCol(), stone, positions)){
                 break;
-            }
-            if(other == stone){
-                needsFlip = true;
-                break;
-            }
-            else {
-                positions.add(new Move(y, move.getCol()));
             }
         }
 
-        flipMoves(needsFlip, positions, stone);
+        flipMoves(positions);
     }
 
-    private void flipDown(Move move, @Stone int stone) {
-        boolean needsFlip = false;
-        final List<Move> positions = new ArrayList<>();
+    private void flipDown(Move move, @Stone.Value int stone) {
+        final List<Stone> positions = new ArrayList<>();
 
-        for(int y = move.getRow() + 1 ; y < ROWS ; y++){
-            @Stone int other = board[y][move.getCol()];
-            if(other == EMPTY) {
-                needsFlip = false;
+        for (int y = move.getRow() + 1; y < ROWS; y++) {
+            if(check(y, move.getCol(), stone, positions)){
                 break;
-            }
-            if(other == stone){
-                needsFlip = true;
-                break;
-            }
-            else {
-                positions.add(new Move(y, move.getCol()));
             }
         }
 
-        flipMoves(needsFlip, positions, stone);
+        flipMoves(positions);
     }
 
-    private void flipNW(Move move, @Stone int stone) {
-        boolean needsFlip = false;
-        final List<Move> positions = new ArrayList<>();
+    private void flipNW(Move move, @Stone.Value int stone) {
+        final List<Stone> positions = new ArrayList<>();
 
-        for(int offset = 1 ; offset < ROWS ; offset++){
-            @Stone int other = board[move.getRow() - offset][move.getCol() - offset];
-            if(other == EMPTY) {
-                needsFlip = false;
+        for (int offset = 1; offset < ROWS; offset++) {
+            if(check(move.getRow() - offset, move.getCol() - offset, stone, positions)){
                 break;
-            }
-            if(other == stone){
-                needsFlip = true;
-                break;
-            }
-            else {
-                positions.add(new Move(move.getRow() - offset,move.getCol() - offset));
             }
         }
 
-        flipMoves(needsFlip, positions, stone);
+        flipMoves(positions);
     }
 
-    private void flipNE(Move move, @Stone int stone) {
-        boolean needsFlip = false;
-        final List<Move> positions = new ArrayList<>();
+    private void flipNE(Move move, @Stone.Value int stone) {
+        final List<Stone> positions = new ArrayList<>();
 
-        for(int offset = 1 ; offset < ROWS ; offset++){
-            @Stone int other = board[move.getRow() - offset][move.getCol() + offset];
-            if(other == EMPTY) {
-                needsFlip = false;
+        for (int offset = 1; offset < ROWS; offset++) {
+            if(check(move.getRow() - offset, move.getCol() + offset, stone, positions)){
                 break;
-            }
-            if(other == stone){
-                needsFlip = true;
-                break;
-            }
-            else {
-                positions.add(new Move(move.getRow() - offset,move.getCol() + offset));
             }
         }
 
-        flipMoves(needsFlip, positions, stone);
+        flipMoves(positions);
     }
 
-    private void flipSE(Move move, @Stone int stone) {
-        boolean needsFlip = false;
-        final List<Move> positions = new ArrayList<>();
+    private void flipSE(Move move, @Stone.Value int stone) {
+        final List<Stone> positions = new ArrayList<>();
 
-        for(int offset = 1 ; offset < ROWS ; offset++){
-            @Stone int other = board[move.getRow() + offset][move.getCol() + offset];
-            if(other == EMPTY) {
-                needsFlip = false;
+        for (int offset = 1; offset < ROWS; offset++) {
+            if(check(move.getRow() + offset, move.getCol() + offset, stone, positions)){
                 break;
-            }
-            if(other == stone){
-                needsFlip = true;
-                break;
-            }
-            else {
-                positions.add(new Move(move.getRow() + offset,move.getCol() + offset));
             }
         }
 
-        flipMoves(needsFlip, positions, stone);
+        flipMoves(positions);
     }
 
-    private void flipSW(Move move, @Stone int stone) {
-        boolean needsFlip = false;
-        final List<Move> positions = new ArrayList<>();
+    private void flipSW(Move move, @Stone.Value int stone) {
+        final List<Stone> positions = new ArrayList<>();
 
-        for(int offset = 1 ; offset < ROWS ; offset++){
-            @Stone int other = board[move.getRow() + offset][move.getCol() - offset];
-            if(other == EMPTY) {
-                needsFlip = false;
+        for (int offset = 1; offset < ROWS; offset++) {
+            if(check(move.getRow() + offset, move.getCol() - offset, stone, positions)){
                 break;
-            }
-            if(other == stone){
-                needsFlip = true;
-                break;
-            }
-            else {
-                positions.add(new Move(move.getRow() + offset,move.getCol() - offset));
             }
         }
 
-        flipMoves(needsFlip, positions, stone);
+        flipMoves(positions);
     }
-
 
 
     @Override
     public String toString() {
-        return toJson();
+        StringBuilder builder = new StringBuilder();
+        builder.append("|");
+        for (int rows = 0; rows < ROWS; rows++) {
+            for (int cols = 0; cols < COLS; cols++) {
+                @Stone.Value final int stone = board[rows][cols].value();
+                switch(stone){
+                    case Stone.WHITE: builder.append("x"); break;
+                    case Stone.BLACK: builder.append("o"); break;
+                    default: builder.append("_");
+                }
+
+                if (cols < COLS - 1) {
+                    builder.append("|");
+                }
+            }
+            builder.append("|\n");
+            if (rows < ROWS - 1) {
+                builder.append("|");
+            }
+        }
+        return builder.toString();
     }
 
     public String toJson() {
@@ -246,12 +270,12 @@ public class Board {
             builder.append("[");
             for (int cols = 0; cols < COLS; cols++) {
                 builder.append(board[rows][cols]);
-                if(cols < COLS - 1){
+                if (cols < COLS - 1) {
                     builder.append(",");
                 }
             }
             builder.append("]");
-            if(rows < ROWS - 1){
+            if (rows < ROWS - 1) {
                 builder.append(",");
             }
         }

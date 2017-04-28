@@ -23,6 +23,7 @@ public class RefereeTest {
 
     private static final String VALID_MOVE = "[1,2]";
     @InjectMocks private Referee subject;
+    @Mock private Board board;
     @Mock private Player mockPlayer;
     @Mock private Player mockOpponent;
 

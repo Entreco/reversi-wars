@@ -9,13 +9,15 @@ import com.google.gson.JsonSyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
-class Referee implements Arbiter {
+public class Referee implements Arbiter {
 
     private List<Player> playersList = new ArrayList<>();
     private final Gson gson;
+    private final Board board;
 
-    Referee() {
-        gson = new GsonBuilder().create();
+    public Referee(@NonNull final Board board) {
+        this.gson = new GsonBuilder().create();
+        this.board = board;
     }
 
     @Override
@@ -34,6 +36,8 @@ class Referee implements Arbiter {
     public void startMatch() {
         if (playersList.size() <= 1)
             throw new IllegalStateException("Need at least 2 players to start");
+
+        board.start();
         playersList.get(0).yourTurn();
     }
 
@@ -65,6 +69,4 @@ class Referee implements Arbiter {
         int indexOfNextPlayer = (indexOfPreviousPlayer + 1) % playersList.size();
         playersList.get(indexOfNextPlayer).yourTurn();
     }
-
-
 }

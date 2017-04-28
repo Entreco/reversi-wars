@@ -1,6 +1,6 @@
 package nl.entreco.reversi.model;
 
-interface Player {
+public interface Player {
     void yourTurn();
 
     void doMove(String s);

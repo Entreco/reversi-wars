@@ -4,7 +4,7 @@ import android.support.annotation.NonNull;
 
 import java.util.List;
 
-interface Arbiter {
+public interface Arbiter {
     void addPlayer(@NonNull final Player player);
 
     List<Player> getPlayers();

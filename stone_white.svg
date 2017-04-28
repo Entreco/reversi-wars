@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="159px" height="125px" viewBox="0 0 159 125" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 43.1 (39012) - http://www.bohemiancoding.com/sketch -->
+    <title>Group</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Group" transform="translate(1.000000, 1.000000)">
+            <path d="M9.3611671,72 C9.28738739,72.920964 9.25,73.8487684 9.25,74.7827134 C9.25,101.677592 40.2542811,123.480198 78.5,123.480198 C116.745719,123.480198 147.75,101.677592 147.75,74.7827134 C147.75,73.8487684 147.712613,72.920964 147.638833,72 C145.587973,97.6000975 115.417607,117.914771 78.5,117.914771 C41.5823927,117.914771 11.4120267,97.6000975 9.3611671,72 Z" id="Combined-Shape" fill="#B4B4B4"></path>
+            <ellipse id="Oval" stroke="#979797" fill="#FFFFFF" cx="78.5" cy="60" rx="78.5" ry="60"></ellipse>
+            <ellipse id="Oval" fill-opacity="0.25" fill="#D8D8D8" cx="78.5" cy="40" rx="50.5" ry="35"></ellipse>
+            <path d="M18.5963181,39.519802 C18.5323934,40.3062391 18.5,41.0985175 18.5,41.8960396 C18.5,64.8623361 45.362915,83.480198 78.5,83.480198 C111.637085,83.480198 138.5,64.8623361 138.5,41.8960396 C138.5,41.0985175 138.467607,40.3062391 138.403682,39.519802 C136.626764,61.3804488 110.486375,78.7277228 78.5,78.7277228 C46.5136254,78.7277228 20.3732361,61.3804488 18.5963181,39.519802 Z" id="Combined-Shape" fill="#D8D8D8"></path>
+        </g>
+    </g>
+</svg>
