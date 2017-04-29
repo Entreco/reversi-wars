@@ -7,24 +7,28 @@ import java.lang.annotation.Retention;
 import static java.lang.annotation.RetentionPolicy.SOURCE;
 
 public class Stone {
-    public @Value int value() {
+    public @Color int color() {
         return value;
     }
 
     @Retention(SOURCE)
     @IntDef({WHITE, BLACK, EMPTY})
-    public @interface Value {
+    public @interface Color {
 
     }
-    public static final @Value int WHITE = -1;
-    public static final @Value int BLACK = 1;
-    public static final @Value int EMPTY = 0;
+    public static final @Color int WHITE = -1;
+    public static final @Color int BLACK = 1;
+    public static final @Color int EMPTY = 0;
 
     private final int row;
     private final int col;
-    private @Value int value;
+    private @Color int value;
 
-    public Stone(int row, int col, @Value int stone) {
+    Stone(){
+        this(0,0, EMPTY);
+    }
+
+    public Stone(int row, int col, @Color int stone) {
         this.row = row;
         this.col = col;
         this.value = stone;
@@ -36,7 +40,7 @@ public class Stone {
     public int col(){
         return col;
     }
-    public void set(@Value int val) {
+    public void set(@Color int val) {
         this.value = val;
     }
     public void flip(){
@@ -45,10 +49,6 @@ public class Stone {
             case Stone.WHITE: value = Stone.BLACK; break;
             default: break;
         }
-    }
-
-    public int getItemPosition(){
-        return row * 8 + col;
     }
 
     @Override

@@ -1,12 +1,17 @@
 package nl.entreco.reversi.model;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Collections;
+import java.util.TimerTask;
+
+import nl.entreco.reversi.model.players.NotStartedPlayer;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
@@ -17,19 +22,40 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class RefereeTest {
 
-    private static final String VALID_MOVE = "[1,2]";
-    @InjectMocks private Referee subject;
-    @Mock private Board board;
+    private static final String VALID_MOVE_1 = "[2,3]";
+    private static final String VALID_MOVE_2 = "[2,2]";
+
+    private Referee subject;
+
+    @Mock private GameSettings mockGameSettings;
+
     @Mock private Player mockPlayer;
     @Mock private Player mockOpponent;
+
+    @Captor private ArgumentCaptor<TimerTask> timerTask;
+
+    @Before
+    public void setUp() throws Exception {
+        when(mockGameSettings.getStartIndex()).thenReturn(0);
+        when(mockGameSettings.getBoardSize()).thenReturn(8);
+
+        subject = new Referee(mockGameSettings);
+    }
 
     @Test
     public void itShouldInitializeEmptyPlayersList() throws Exception {
         assertNotNull(subject.getPlayers());
+    }
+
+    @Test
+    public void itShouldReturnDummyPlayerWhenGameNotStartedYet() throws Exception {
+        assertNotNull(subject.getCurrentPlayer());
+        assertTrue(subject.getCurrentPlayer() instanceof NotStartedPlayer);
     }
 
     @Test
@@ -68,11 +94,51 @@ public class RefereeTest {
     }
 
     @Test
+    public void itShouldReturnFirstPlayerWhenStartingNewMatch() throws Exception {
+        simulateMatchStarted(mockPlayer, mock(Player.class));
+        assertEquals(mockPlayer, subject.getCurrentPlayer());
+    }
+
+    @Test
+    public void itShouldClearPlayersOnRestart() throws Exception {
+        subject.restart();
+        assertTrue(subject.getPlayers().isEmpty());
+    }
+
+    @Test
+    public void itShouldNotifyFirstPlayerAfterRestart() throws Exception {
+        simulateMatchStarted(mockPlayer, mockOpponent);
+        subject.restart();
+        subject.addPlayer(mockPlayer);
+        subject.addPlayer(mockOpponent);
+        subject.startMatch();
+
+        verify(mockPlayer).yourTurn();
+    }
+
+
+    @Test
+    public void itShouldRevertAfterInvalidMove() throws Exception {
+        simulateMatchStarted(mockPlayer, mockOpponent);
+        String startBoardLayout = subject.getBoard().toJson();
+
+        simulateTurn(mockPlayer, "[\"invalid\":\"move\"]");
+        assertEquals(startBoardLayout, subject.getBoard().toJson());
+    }
+
+    @Test
     public void itShouldNotifySecondPlayerOnMoveReceived() throws Exception {
         simulateMatchStarted(mockPlayer, mockOpponent);
 
-        simulateTurn(mockPlayer, VALID_MOVE);
+        simulateTurn(mockPlayer, VALID_MOVE_1);
         verify(mockOpponent).yourTurn();
+    }
+
+    @Test
+    public void itShouldNotifyNextPlayerWhenTimedOut() throws Exception {
+        simulateMatchStarted(mockPlayer, mockOpponent);
+        simulateTimedOut(mockPlayer);
+
     }
 
     @Test
@@ -87,18 +153,22 @@ public class RefereeTest {
     public void itShouldNotifyFirstPlayerAfterSecondPlayerMoveReceived() throws Exception {
         simulateMatchStarted(mockPlayer, mockOpponent);
 
-        simulateTurn(mockPlayer, VALID_MOVE);
+        simulateTurn(mockPlayer, VALID_MOVE_1);
         verify(mockOpponent).yourTurn();
 
-        simulateTurn(mockOpponent, VALID_MOVE);
+        simulateTurn(mockOpponent, VALID_MOVE_2);
         verify(mockPlayer).yourTurn();
     }
 
     @Test
     public void itShouldNotifyThirdPlayerAfterSecondPlayerMoveReceived() throws Exception {
-        simulateMatchStarted(mock(Player.class), mockPlayer, mockOpponent);
+        final Player mock = mock(Player.class);
+        simulateMatchStarted(mock, mockPlayer, mockOpponent);
 
-        simulateTurn(mockPlayer, VALID_MOVE);
+        simulateTurn(mock, VALID_MOVE_1);
+        verify(mockPlayer).yourTurn();
+
+        simulateTurn(mockPlayer, VALID_MOVE_2);
         verify(mockOpponent).yourTurn();
     }
 
@@ -107,6 +177,26 @@ public class RefereeTest {
         simulateMatchStarted(mockPlayer, mockOpponent);
 
         simulateTurn(mockPlayer, "");
+
+        verify(mockPlayer).onMoveRejected();
+    }
+
+    @Test
+    public void itShouldRejectMoveWhenNotPlayersTurn() throws Exception {
+
+        assertFalse(subject.isPlayersTurn(mockPlayer));
+        assertFalse(subject.isPlayersTurn(mockOpponent));
+
+        simulateMatchStarted(mockPlayer, mockOpponent);
+        assertTrue(subject.isPlayersTurn(mockPlayer));
+        assertFalse(subject.isPlayersTurn(mockOpponent));
+    }
+
+    @Test
+    public void itShouldRejectMoveWhenNoStonesAreFlipped() throws Exception {
+        simulateMatchStarted(mockPlayer, mockOpponent);
+
+        simulateTurn(mockPlayer, "[0,0]");
 
         verify(mockPlayer).onMoveRejected();
     }
@@ -142,6 +232,7 @@ public class RefereeTest {
     }
 
     private void simulateTurn(Player player, String s) {
+        when(player.getStoneColor()).thenReturn(VALID_MOVE_1.equals(s) ? Stone.BLACK: Stone.WHITE);
         subject.onMoveReceived(player, s);
     }
 
@@ -150,6 +241,7 @@ public class RefereeTest {
             subject.addPlayer(player);
         }
         subject.startMatch();
+
         verify(players[0]).yourTurn();
         reset(players[0]);
     }

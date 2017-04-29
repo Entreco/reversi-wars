@@ -11,7 +11,15 @@ public interface Arbiter {
 
     void startMatch();
 
-    void onMoveReceived(@NonNull final Player player, String move);
+    List<Stone> onMoveReceived(@NonNull final Player player, String move);
 
     void onTimedOut(@NonNull final Player player);
+
+    @NonNull
+    Board getBoard();
+
+    @NonNull
+    Player getCurrentPlayer();
+
+    void restart();
 }

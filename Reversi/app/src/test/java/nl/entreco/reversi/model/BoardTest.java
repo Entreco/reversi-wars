@@ -1,8 +1,8 @@
 package nl.entreco.reversi.model;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import static org.junit.Assert.assertEquals;
@@ -14,7 +14,20 @@ public class BoardTest {
     private static final String EMPTY = "{\"board\":[[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0]]}";
     private static final String START = "{\"board\":[[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,-1,1,0,0,0],[0,0,0,1,-1,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0]]}";
 
-    @InjectMocks private Board subject;
+
+    private static final int BOARD_SIZE = 8;
+
+    private Board subject;
+
+    @Before
+    public void setUp() throws Exception {
+        subject = new Board(BOARD_SIZE);
+    }
+
+    @Test
+    public void itShouldReportBoardSize() throws Exception {
+        assertEquals(BOARD_SIZE, subject.getBoardSize());
+    }
 
     @Test
     public void itShouldCreateEmptyBoard() throws Exception {
@@ -25,6 +38,11 @@ public class BoardTest {
     public void itShouldCreateStartPosition() throws Exception {
         subject.start();
         assertEquals(START, subject.toJson());
+    }
+
+    @Test
+    public void itShouldGetCorrectStone() throws Exception {
+        assertEquals(Stone.EMPTY, subject.get(0).color());
     }
 
     @Test
@@ -65,6 +83,19 @@ public class BoardTest {
 
         subject.apply(new Move(5, 1), Stone.BLACK);
         assertEquals("{\"board\":[[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,1,0,0,0,0],[0,0,0,1,1,0,0,0],[0,0,1,-1,-1,0,0,0],[0,1,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0]]}", subject.toJson());
+    }
+
+    @Test
+    public void itShouldNotFlipCorners() throws Exception {
+        subject.start();
+        subject.apply(new Move(2, 3), Stone.BLACK);
+        assertEquals("{\"board\":[[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,1,0,0,0,0],[0,0,0,1,1,0,0,0],[0,0,0,1,-1,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0]]}", subject.toJson());
+        subject.apply(new Move(1, 3), Stone.WHITE);
+        assertEquals("{\"board\":[[0,0,0,0,0,0,0,0],[0,0,0,-1,0,0,0,0],[0,0,0,1,0,0,0,0],[0,0,0,1,1,0,0,0],[0,0,0,1,-1,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0]]}", subject.toJson());
+        subject.apply(new Move(0, 3), Stone.BLACK);
+        assertEquals("{\"board\":[[0,0,0,1,0,0,0,0],[0,0,0,1,0,0,0,0],[0,0,0,1,0,0,0,0],[0,0,0,1,1,0,0,0],[0,0,0,1,-1,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0]]}", subject.toJson());
+        subject.apply(new Move(5, 3), Stone.WHITE);
+        assertEquals("{\"board\":[[0,0,0,1,0,0,0,0],[0,0,0,1,0,0,0,0],[0,0,0,1,0,0,0,0],[0,0,0,1,1,0,0,0],[0,0,0,1,-1,0,0,0],[0,0,0,-1,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0]]}", subject.toJson());
     }
 
     @Test
