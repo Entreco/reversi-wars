@@ -3,6 +3,7 @@
 >
 
     <data>
+        <import type="nl.entreco.reversi.model.Stone.Color" alias="stone" />
         <variable name="adapter" type="nl.entreco.reversi.game.BoardAdapter"/>
         <variable name="arbiter" type="nl.entreco.reversi.model.Arbiter"/>
         <variable name="viewModel" type="nl.entreco.reversi.ReversiViewModel"/>
@@ -26,14 +27,14 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
-            <LinearLayout android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:orientation="vertical">
+            <LinearLayout android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:orientation="vertical" app:player="@{1}" app:current="@{arbiter.currentPlayer}">
                 <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="P1" android:drawableTop="@drawable/ic_stone_white"/>
             </LinearLayout>
             <LinearLayout android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:orientation="vertical">
                 <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Referee" android:gravity="center"/>
                 <Button android:layout_height="wrap_content" android:layout_width="match_parent" android:text="Start" android:onClick="@{() -> viewModel.start(arbiter, adapter)}"/>
             </LinearLayout>
-            <LinearLayout android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:orientation="vertical">
+            <LinearLayout android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:orientation="vertical" app:player="@{-1}" app:current="@{arbiter.currentPlayer}">
                 <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="P2" android:drawableTop="@drawable/ic_stone_black"/>
             </LinearLayout>
         </LinearLayout>

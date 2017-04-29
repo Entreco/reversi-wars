@@ -64,7 +64,12 @@ public class Referee implements Arbiter {
         Log.d(TAG,
                 "switchToPlayer -> player.yourTurn():" + player + " currentPlayer:" +
                         currentPlayer);
-        player.yourTurn();
+
+        if(board.findMoves(player.getStoneColor()).size() > 0) {
+            player.yourTurn();
+        } else {
+            notifyNextPlayer(player);
+        }
     }
 
     @Override
@@ -136,5 +141,4 @@ public class Referee implements Arbiter {
         if(playersList.isEmpty()) return new NotStartedPlayer();
         return playersList.get(currentPlayer);
     }
-
 }

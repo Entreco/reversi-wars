@@ -3,6 +3,7 @@ package nl.entreco.reversi.model;
 import android.support.annotation.NonNull;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 public class Board extends ArrayList<Stone>{
@@ -243,5 +244,42 @@ public class Board extends ArrayList<Stone>{
                 add(new Move(row, col), Stone.EMPTY);
             }
         }
+    }
+
+    @NonNull
+    public List<Move> findMoves(@Stone.Color int stone) {
+        final Board copy = clone();
+
+        // 1) Find Empty Stones
+        final Iterator<Stone> iterator = copy.iterator();
+        while (iterator.hasNext()){
+            if(iterator.next().color() != Stone.EMPTY){
+                iterator.remove();
+            }
+        }
+
+
+        // 2) Generate Moves for Empty Stones
+        final List<Move> possibleMoves = new ArrayList<>();
+        for(final Stone empty : copy){
+            final Move move = new Move(empty.row(), empty.col());
+            final Board copyOfCurrentBoard = clone();
+            // 3) Check if the move actually flips some stones;
+            if(copyOfCurrentBoard.apply(move, stone).size() > 0) {
+                possibleMoves.add(move);
+            }
+        }
+
+        return possibleMoves;
+    }
+
+    @Override
+    public Board clone() {
+        Board clone = new Board(boardSize);
+        clone.clear();
+        for (final Stone item : this){
+            clone.add(item.clone());
+        }
+        return clone;
     }
 }

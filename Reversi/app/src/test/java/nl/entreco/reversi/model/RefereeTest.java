@@ -201,6 +201,12 @@ public class RefereeTest {
         verify(mockPlayer).onMoveRejected();
     }
 
+
+    @Test
+    public void itShouldNotNotifyNextPlayerIfNoMovesAvailable() throws Exception {
+
+    }
+
     @Test
     public void itShouldRejectNullMoves() throws Exception {
         assertFalse(subject.isValidPosition(null));

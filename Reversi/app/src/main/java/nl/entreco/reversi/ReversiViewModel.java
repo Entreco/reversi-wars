@@ -4,6 +4,7 @@ import android.databinding.BindingAdapter;
 import android.databinding.ObservableField;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -51,6 +52,17 @@ public class ReversiViewModel {
     @BindingAdapter("player")
     public static void setPlayerName(@NonNull final TextView view, @Nullable final Player player){
         view.setText(player == null ? "" : String.valueOf(player.getStoneColor()));
+    }
+
+    @BindingAdapter({"player", "current"})
+    public static void setPlayerHere(@NonNull final View view, @Stone.Color int stone, @Nullable final Player player){
+        if(player != null) {
+            if (stone == player.getStoneColor()) {
+                view.animate().scaleX(1.1F).scaleY(1.1F).alpha(1F).start();
+            } else {
+                view.animate().scaleX(.9F).scaleY(.9F).alpha(.8F).start();
+            }
+        }
     }
 
 }

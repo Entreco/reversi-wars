@@ -55,4 +55,9 @@ public class Stone {
     public String toString() {
         return String.valueOf(value);
     }
+
+    @Override
+    protected Stone clone() {
+        return new Stone(row, col, value);
+    }
 }

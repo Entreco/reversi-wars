@@ -14,10 +14,10 @@ public class Move extends ArrayList<Integer> {
         add(col);
     }
 
-    int getRow(){
+    public int getRow(){
         return get(0);
     }
-    int getCol(){
+    public int getCol(){
         return get(1);
     }
 

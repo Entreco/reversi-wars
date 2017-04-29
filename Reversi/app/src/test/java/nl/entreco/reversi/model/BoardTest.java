@@ -150,6 +150,20 @@ public class BoardTest {
     }
 
     @Test
+    public void itShouldReturnPossibleMovesForWhite() throws Exception {
+        subject.start();
+
+        assertEquals(4, subject.findMoves(Stone.WHITE).size());
+    }
+
+    @Test
+    public void itShouldReturnPossibleMovesForBlack() throws Exception {
+        subject.start();
+
+        assertEquals(4, subject.findMoves(Stone.BLACK).size());
+    }
+
+    @Test
     public void iWant100ProcentCoverage() throws Exception {
         subject.start();
 
