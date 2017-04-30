@@ -23,8 +23,11 @@ public class Move extends ArrayList<Integer> {
 
     boolean isValid() {
         if(size() != 2) return false;
-        if(getRow() < 0 || getRow() > 8) return false;
-        if(getCol() < 0 || getCol() > 8) return false;
         return true;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("[%s,%s]", getRow(), getCol());
     }
 }

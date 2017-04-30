@@ -56,6 +56,13 @@ public class MoveTest {
         assertEquals(4, move.getCol());
     }
 
+    @Test
+    public void itShouldOutputValidJson() throws Exception {
+        createMove(2, 4);
+        assertEquals("[2,4]", subject.toString());
+
+    }
+
     void createMove(@NonNull Integer... values){
         subject = new Move();
         for(final int value : values) {

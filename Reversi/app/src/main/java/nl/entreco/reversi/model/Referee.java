@@ -46,8 +46,8 @@ public class Referee implements Arbiter {
     @Override
     public void restart() {
         currentPlayer = settings.getStartIndex();
-        playersList.clear();
         board.restart();
+        startMatch();
     }
 
     @Override
@@ -60,16 +60,23 @@ public class Referee implements Arbiter {
 
     }
 
-    private void switchToPlayer(@NonNull final Player player) {
+    void switchToPlayer(@NonNull final Player player) {
         Log.d(TAG,
                 "switchToPlayer -> player.yourTurn():" + player + " currentPlayer:" +
                         currentPlayer);
 
-        if(board.findMoves(player.getStoneColor()).size() > 0) {
-            player.yourTurn();
-        } else {
+        final @Stone.Color int stoneColor = player.getStoneColor();
+        if (board.canMove(stoneColor)) {
+            player.yourTurn(board.toJson());
+        } else if (board.canMove(-1 * stoneColor)) {
             notifyNextPlayer(player);
+        } else {
+            notifyGameFinished();
         }
+    }
+
+    private void notifyGameFinished() {
+        // TODO: Show Game Finished
     }
 
     @Override
@@ -79,30 +86,19 @@ public class Referee implements Arbiter {
                 && isPlayersTurn(player)) {
             final List<Stone> updated = updateBoard(move, player.getStoneColor());
             if (updated.size() > 0) {
-                notifyNextPlayer(player);
                 return updated;
             }
         }
 
         Log.d(TAG, "onMoveReceived -> onMoveRejected:" + player + " move:" + move);
-        revertBoard(move);
-        player.onMoveRejected();
+        player.onMoveRejected(board.toJson());
         return new ArrayList<>(0);
     }
 
-    private void revertBoard(String moveString) {
-        try {
-            final Move move = gson.fromJson(moveString, Move.class);
-            if (move != null) {
-                board.set(move, Stone.EMPTY);
-            }
-        } catch (JsonSyntaxException ignore) {
-        }
-    }
 
     private List<Stone> updateBoard(String moveString, @Stone.Color int color) {
         final Move move = gson.fromJson(moveString, Move.class);
-        return board.apply(move, color);
+        return board.clone().apply(move, color);
     }
 
     boolean isPlayersTurn(Player player) {
@@ -113,10 +109,20 @@ public class Referee implements Arbiter {
         if (move == null || "".equals(move)) return false;
         try {
             final Move aMove = gson.fromJson(move, Move.class);
-            return aMove.isValid();
+            return aMove.isValid() && inBounds(aMove) && isEmptySpot(aMove);
         } catch (JsonSyntaxException ignore) {
         }
         return false;
+    }
+
+    private boolean isEmptySpot(@NonNull final Move aMove) {
+        return board.get(board.getItemPosition(aMove)).color() == Stone.EMPTY;
+    }
+
+    private boolean inBounds(@NonNull final Move aMove) {
+        if (aMove.getCol() < 0 || aMove.getCol() >= board.getBoardSize()) return false;
+        if (aMove.getRow() < 0 || aMove.getRow() >= board.getBoardSize()) return false;
+        return true;
     }
 
     @Override
@@ -125,7 +131,7 @@ public class Referee implements Arbiter {
         notifyNextPlayer(player);
     }
 
-    private void notifyNextPlayer(Player previousPlayer) {
+    public void notifyNextPlayer(@NonNull Player previousPlayer) {
         int indexOfPreviousPlayer = playersList.indexOf(previousPlayer);
         currentPlayer = (indexOfPreviousPlayer + 1) % playersList.size();
         switchToPlayer(playersList.get(currentPlayer));
@@ -138,7 +144,7 @@ public class Referee implements Arbiter {
 
     @NonNull
     public Player getCurrentPlayer() {
-        if(playersList.isEmpty()) return new NotStartedPlayer();
+        if (playersList.isEmpty()) return new NotStartedPlayer();
         return playersList.get(currentPlayer);
     }
 }

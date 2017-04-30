@@ -214,7 +214,10 @@ public class Board extends ArrayList<Stone>{
     }
 
     public String toJson() {
-        StringBuilder builder = new StringBuilder("{\"board\":");
+        StringBuilder builder = new StringBuilder("{\"size\":");
+        builder.append(boardSize);
+        builder.append(",");
+        builder.append("\"board\":");
         builder.append("[");
         for (int rows = 0; rows < boardSize; rows++) {
             builder.append("[");
@@ -246,8 +249,32 @@ public class Board extends ArrayList<Stone>{
         }
     }
 
+    boolean canMove(@Stone.Color int stone) {
+        final Board copy = clone();
+
+        // 1) Find Empty Stones
+        final Iterator<Stone> iterator = copy.iterator();
+        while (iterator.hasNext()){
+            if(iterator.next().color() != Stone.EMPTY){
+                iterator.remove();
+            }
+        }
+
+        // 2) Generate Moves for Empty Stones
+        for(final Stone empty : copy){
+            final Move move = new Move(empty.row(), empty.col());
+            final Board copyOfCurrentBoard = clone();
+            // 3) Check if the move actually flips some stones;
+            if(copyOfCurrentBoard.apply(move, stone).size() > 0) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     @NonNull
-    public List<Move> findMoves(@Stone.Color int stone) {
+    public List<Move> findAllMoves(@Stone.Color int stone) {
         final Board copy = clone();
 
         // 1) Find Empty Stones

@@ -1,16 +1,16 @@
 package nl.entreco.reversi.game;
 
+import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
-import nl.entreco.reversi.ReversiActivity;
 import nl.entreco.reversi.databinding.ItemStoneBinding;
 import nl.entreco.reversi.model.Stone;
 
-class StoneHolder extends RecyclerView.ViewHolder{
+class StoneHolder extends RecyclerView.ViewHolder {
 
     private final ItemStoneBinding itemView;
-    private ReversiActivity.StoneClickListener stoneClickListener;
+    private StoneClickListener stoneClickListener;
 
     StoneHolder(final ItemStoneBinding itemView) {
         super(itemView.getRoot());
@@ -18,7 +18,7 @@ class StoneHolder extends RecyclerView.ViewHolder{
         itemView.getRoot().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(stoneClickListener != null){
+                if (stoneClickListener != null) {
                     stoneClickListener.onStoneClicked(itemView.getStone());
                 }
             }
@@ -33,7 +33,7 @@ class StoneHolder extends RecyclerView.ViewHolder{
         itemView.setStone(stone);
     }
 
-    void setOnClickListener(ReversiActivity.StoneClickListener stoneClickListener){
+    void setOnClickListener(@NonNull final StoneClickListener stoneClickListener) {
         this.stoneClickListener = stoneClickListener;
     }
 }

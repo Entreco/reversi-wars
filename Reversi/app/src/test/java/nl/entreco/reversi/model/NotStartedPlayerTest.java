@@ -16,12 +16,12 @@ public class NotStartedPlayerTest {
 
     @Test
     public void yourTurn() throws Exception {
-        subject.yourTurn();
+        subject.yourTurn("");
     }
 
     @Test
     public void onMoveRejected() throws Exception {
-        subject.onMoveRejected();
+        subject.onMoveRejected("");
     }
 
     @Test

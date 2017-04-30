@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+        <variable name="game" type="nl.entreco.reversi.game.Game" />
+    </data>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:orientation="horizontal" tools:showIn="@layout/activity_reversi">
+        <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+                      app:player="@{game.player1.stoneColor}" app:current="@{game.current}"
+                      android:layout_weight="1" android:orientation="vertical">
+            <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+                      android:drawableTop="@drawable/ic_stone_white" android:text="P1"/>
+        </LinearLayout>
+        <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+                      android:layout_weight="1" android:orientation="vertical">
+            <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+                      android:gravity="center" android:text="Referee"/>
+            <Button android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:text="@{game.inProgress ? @string/pause : @string/start}"
+                    android:onClick="@{() -> game.startGame()}"/>
+        </LinearLayout>
+        <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+                      app:player="@{game.player2.stoneColor}" app:current="@{game.current}"
+                      android:layout_weight="1" android:orientation="vertical">
+            <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+                      android:drawableTop="@drawable/ic_stone_black" android:text="P2"/>
+        </LinearLayout>
+    </LinearLayout>
+</layout>

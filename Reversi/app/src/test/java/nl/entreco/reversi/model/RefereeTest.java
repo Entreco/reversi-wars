@@ -18,6 +18,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
@@ -43,6 +44,8 @@ public class RefereeTest {
     public void setUp() throws Exception {
         when(mockGameSettings.getStartIndex()).thenReturn(0);
         when(mockGameSettings.getBoardSize()).thenReturn(8);
+        when(mockPlayer.getStoneColor()).thenReturn(Stone.BLACK);
+        when(mockOpponent.getStoneColor()).thenReturn(Stone.WHITE);
 
         subject = new Referee(mockGameSettings);
     }
@@ -79,12 +82,13 @@ public class RefereeTest {
         subject.addPlayer(mockPlayer);
         subject.startMatch();
 
-        verify(mockPlayer, never()).yourTurn();
+        verify(mockPlayer, never()).yourTurn(anyString());
     }
 
     @Test
     public void itShouldAddAllUniquePlayersToList() throws Exception {
-        simulateMatchStarted(mock(Player.class), mock(Player.class), mock(Player.class));
+        final Player mock = mock(Player.class);
+        simulateMatchStarted(mockPlayer, mockOpponent, mock);
         assertEquals(3, subject.getPlayers().size());
     }
 
@@ -99,21 +103,28 @@ public class RefereeTest {
         assertEquals(mockPlayer, subject.getCurrentPlayer());
     }
 
-    @Test
-    public void itShouldClearPlayersOnRestart() throws Exception {
+    @Test(expected = IllegalStateException.class)
+    public void itShouldThrowErrorWhenTryingToRestartWithoutPlayers() throws Exception {
         subject.restart();
-        assertTrue(subject.getPlayers().isEmpty());
+    }
+
+    @Test
+    public void itShouldRestartWhenPlayersAlreadyAdded() throws Exception {
+        simulateMatchStarted(mockPlayer, mockOpponent);
+        subject.restart();
+
+        assertFalse(subject.getPlayers().isEmpty());
+        assertEquals(2, subject.getPlayers().size());
     }
 
     @Test
     public void itShouldNotifyFirstPlayerAfterRestart() throws Exception {
         simulateMatchStarted(mockPlayer, mockOpponent);
-        subject.restart();
-        subject.addPlayer(mockPlayer);
-        subject.addPlayer(mockOpponent);
-        subject.startMatch();
+        simulateTurn(mockPlayer, VALID_MOVE_1);
 
-        verify(mockPlayer).yourTurn();
+        subject.restart();
+
+        assertTrue(subject.getCurrentPlayer().equals(mockPlayer));
     }
 
 
@@ -131,7 +142,6 @@ public class RefereeTest {
         simulateMatchStarted(mockPlayer, mockOpponent);
 
         simulateTurn(mockPlayer, VALID_MOVE_1);
-        verify(mockOpponent).yourTurn();
     }
 
     @Test
@@ -146,7 +156,7 @@ public class RefereeTest {
         simulateMatchStarted(mockPlayer, mockOpponent);
 
         simulateTimedOut(mockPlayer);
-        verify(mockOpponent).yourTurn();
+        verify(mockOpponent).yourTurn(anyString());
     }
 
     @Test
@@ -154,22 +164,17 @@ public class RefereeTest {
         simulateMatchStarted(mockPlayer, mockOpponent);
 
         simulateTurn(mockPlayer, VALID_MOVE_1);
-        verify(mockOpponent).yourTurn();
-
         simulateTurn(mockOpponent, VALID_MOVE_2);
-        verify(mockPlayer).yourTurn();
     }
 
     @Test
     public void itShouldNotifyThirdPlayerAfterSecondPlayerMoveReceived() throws Exception {
         final Player mock = mock(Player.class);
+        when(mock.getStoneColor()).thenReturn(Stone.BLACK);
         simulateMatchStarted(mock, mockPlayer, mockOpponent);
 
         simulateTurn(mock, VALID_MOVE_1);
-        verify(mockPlayer).yourTurn();
-
         simulateTurn(mockPlayer, VALID_MOVE_2);
-        verify(mockOpponent).yourTurn();
     }
 
     @Test
@@ -178,7 +183,7 @@ public class RefereeTest {
 
         simulateTurn(mockPlayer, "");
 
-        verify(mockPlayer).onMoveRejected();
+        verify(mockPlayer).onMoveRejected(anyString());
     }
 
     @Test
@@ -198,7 +203,7 @@ public class RefereeTest {
 
         simulateTurn(mockPlayer, "[0,0]");
 
-        verify(mockPlayer).onMoveRejected();
+        verify(mockPlayer).onMoveRejected(anyString());
     }
 
 
@@ -238,7 +243,7 @@ public class RefereeTest {
     }
 
     private void simulateTurn(Player player, String s) {
-        when(player.getStoneColor()).thenReturn(VALID_MOVE_1.equals(s) ? Stone.BLACK: Stone.WHITE);
+        when(player.getStoneColor()).thenReturn(VALID_MOVE_1.equals(s) ? Stone.BLACK : Stone.WHITE);
         subject.onMoveReceived(player, s);
     }
 
@@ -248,7 +253,7 @@ public class RefereeTest {
         }
         subject.startMatch();
 
-        verify(players[0]).yourTurn();
+        verify(players[0]).yourTurn(anyString());
         reset(players[0]);
     }
 }

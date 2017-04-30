@@ -1,10 +1,14 @@
 package nl.entreco.reversi.model;
 
-public interface Player {
-    void yourTurn();
+import android.support.annotation.NonNull;
 
-    void onMoveRejected();
+public interface Player {
+    void yourTurn(@NonNull final String board);
+
+    void onMoveRejected(@NonNull final String board);
 
     @Stone.Color int getStoneColor();
+
+    boolean isHuman();
 
 }

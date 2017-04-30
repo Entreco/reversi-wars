@@ -13,6 +13,8 @@ public interface Arbiter {
 
     List<Stone> onMoveReceived(@NonNull final Player player, String move);
 
+    void notifyNextPlayer(@NonNull final Player previousPlayer);
+
     void onTimedOut(@NonNull final Player player);
 
     @NonNull
