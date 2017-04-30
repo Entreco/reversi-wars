@@ -1,4 +1,4 @@
-package nl.entreco.reversi.game;
+package nl.entreco.reversi;
 
 import android.view.View;
 import android.view.ViewPropertyAnimator;
@@ -16,7 +16,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class GameBindingTest {
+public class BindingsTest {
 
     @Mock private View mockView;
     @Mock private Player mockPlayer;
@@ -31,7 +31,7 @@ public class GameBindingTest {
         when(mockProperyAnimator.scaleY(anyFloat())).thenReturn(mockProperyAnimator);
         when(mockProperyAnimator.alpha(anyFloat())).thenReturn(mockProperyAnimator);
 
-        Game.setPlayerHere(mockView, Stone.BLACK, mockPlayer);
+        Bindings.doPlayerRelatedAnimations(mockView, Stone.BLACK, mockPlayer, null);
 
         verify(mockView).animate();
     }

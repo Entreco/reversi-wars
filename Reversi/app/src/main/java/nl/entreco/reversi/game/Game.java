@@ -1,17 +1,12 @@
 package nl.entreco.reversi.game;
 
-import android.databinding.BindingAdapter;
 import android.databinding.ObservableBoolean;
 import android.databinding.ObservableField;
 import android.databinding.ObservableInt;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.view.View;
-import android.widget.TextView;
 
 import java.util.List;
 
-import nl.entreco.reversi.AnimationUtils;
 import nl.entreco.reversi.model.Arbiter;
 import nl.entreco.reversi.model.GameCallback;
 import nl.entreco.reversi.model.Move;
@@ -89,23 +84,5 @@ public class Game implements GameCallback {
     @Override
     public void onMoveRejected(@NonNull Player player) {
         rejected.set(player);
-    }
-
-    @BindingAdapter("score")
-    public static void updateScore(@NonNull final TextView view, int score) {
-        view.setText(String.valueOf(score));
-    }
-
-    @BindingAdapter({"player", "current", "rejectAnimation"})
-    public static void doMoveRejectedAnimation(@NonNull final View view, @Stone.Color int stone,
-                                               @Nullable final Player player,
-                                               @Nullable final Player rejected) {
-        if (rejected != null) {
-            AnimationUtils.reject(view, stone, rejected);
-        }
-
-        if (player != null) {
-            AnimationUtils.current(view, stone, player);
-        }
     }
 }

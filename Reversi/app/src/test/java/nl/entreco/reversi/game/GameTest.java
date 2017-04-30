@@ -78,6 +78,14 @@ public class GameTest {
         verify(mockAdapter).setCurrentPlayer(mockP1, subject);
     }
 
+    @Test
+    public void itShouldSetRejectedPlayer() throws Exception {
+        subject.onMoveRejected(mockP1);
+
+        assertEquals(mockP1, subject.rejected.get());
+
+    }
+
     private void simulateValidMove(List<Stone> stones) {
         when(mockArbiter.onMoveReceived(any(Player.class), anyString())).thenReturn(stones);
     }
