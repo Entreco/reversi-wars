@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import java.util.List;
 
+import nl.entreco.reversi.AnimationUtils;
 import nl.entreco.reversi.model.Arbiter;
 import nl.entreco.reversi.model.GameCallback;
 import nl.entreco.reversi.model.Move;
@@ -26,6 +27,7 @@ public class Game implements GameCallback {
     @NonNull public final ObservableField<BasePlayer> player2;
     @NonNull public final ObservableInt score2;
     @NonNull public final ObservableField<Player> current;
+    @NonNull public final ObservableField<Player> rejected;
     @NonNull private final BoardAdapter adapter;
     @NonNull private final Arbiter arbiter;
 
@@ -40,6 +42,7 @@ public class Game implements GameCallback {
         this.score1 = new ObservableInt(0);
         this.score2 = new ObservableInt(0);
         this.current = new ObservableField<>();
+        this.rejected = new ObservableField<>();
         this.inProgress = new ObservableBoolean(false);
 
         this.arbiter.addPlayer(p1);
@@ -78,26 +81,31 @@ public class Game implements GameCallback {
     }
 
     @Override
-    public void currentPlayer(@NonNull Player player) {
+    public void setCurrentPlayer(@NonNull Player player) {
         current.set(player);
         adapter.setCurrentPlayer(player, this);
     }
 
+    @Override
+    public void onMoveRejected(@NonNull Player player) {
+        rejected.set(player);
+    }
 
     @BindingAdapter("score")
     public static void updateScore(@NonNull final TextView view, int score) {
         view.setText(String.valueOf(score));
     }
 
-    @BindingAdapter({"player", "current"})
-    public static void setPlayerHere(@NonNull final View view, @Stone.Color int stone,
-                                     @Nullable final Player player) {
+    @BindingAdapter({"player", "current", "rejectAnimation"})
+    public static void doMoveRejectedAnimation(@NonNull final View view, @Stone.Color int stone,
+                                               @Nullable final Player player,
+                                               @Nullable final Player rejected) {
+        if (rejected != null) {
+            AnimationUtils.reject(view, stone, rejected);
+        }
+
         if (player != null) {
-            if (stone == player.getStoneColor()) {
-                view.animate().scaleX(1F).scaleY(1F).alpha(1F).start();
-            } else {
-                view.animate().scaleX(.8F).scaleY(.8F).alpha(.5F).start();
-            }
+            AnimationUtils.current(view, stone, player);
         }
     }
 }

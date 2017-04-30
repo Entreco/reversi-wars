@@ -6,17 +6,17 @@
                 android:duration="@android:integer/config_shortAnimTime"
                 android:propertyName="scaleX"
                 android:valueTo="1.025"
-                android:valueType="floatType" />
+                android:valueType="floatType"/>
             <objectAnimator
                 android:duration="@android:integer/config_shortAnimTime"
                 android:propertyName="scaleY"
                 android:valueTo="1.025"
-                android:valueType="floatType" />
+                android:valueType="floatType"/>
             <objectAnimator
                 android:duration="@android:integer/config_shortAnimTime"
                 android:propertyName="translationZ"
                 android:valueTo="4dp"
-                android:valueType="floatType" />
+                android:valueType="floatType"/>
         </set>
     </item>
 
@@ -26,17 +26,17 @@
                 android:duration="@android:integer/config_shortAnimTime"
                 android:propertyName="scaleX"
                 android:valueTo="1.0"
-                android:valueType="floatType" />
+                android:valueType="floatType"/>
             <objectAnimator
                 android:duration="@android:integer/config_shortAnimTime"
                 android:propertyName="scaleY"
                 android:valueTo="1.0"
-                android:valueType="floatType" />
+                android:valueType="floatType"/>
             <objectAnimator
                 android:duration="@android:integer/config_shortAnimTime"
                 android:propertyName="translationZ"
                 android:valueTo="0dp"
-                android:valueType="floatType" />
+                android:valueType="floatType"/>
         </set>
     </item>
 

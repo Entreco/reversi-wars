@@ -19,6 +19,7 @@
             <ImageView
                 android:layout_width="match_parent" android:layout_height="50dp"
                 android:src="@drawable/ic_stone_white" app:current="@{game.current}"
+                app:rejectAnimation="@{game.rejected}"
                 app:player="@{game.player1.stoneColor}"/>
             <TextView
                 android:layout_width="match_parent" android:layout_height="wrap_content"
@@ -27,27 +28,26 @@
             <TextView
                 android:layout_width="match_parent" android:layout_height="wrap_content"
                 android:gravity="center"
-                app:score="@{game.score1}"
                 android:textSize="30sp"
+                app:score="@{game.score1}"
                 tools:text="65"/>
         </LinearLayout>
 
-        <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
-                      android:layout_weight="1" android:orientation="vertical">
-            <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
-                      android:gravity="center" android:text="Referee"/>
-            <Button android:layout_width="match_parent" android:layout_height="wrap_content"
-                    android:drawableStart="@{game.inProgress ? @android:drawable/ic_media_pause : @android:drawable/ic_media_play}"
-                    android:drawableTint="#333"
-                    android:onClick="@{() -> game.startGame()}"
-                    android:text="@{game.inProgress ? @string/pause : @string/start}"
-                    tools:drawableLeft="@android:drawable/ic_media_play"
-                    tools:text="@string/start"/>
-        </LinearLayout>
+
+            <android.support.design.widget.FloatingActionButton
+                android:layout_gravity="center"
+                android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:onClick="@{() -> game.startGame()}"
+                tools:src="@drawable/ic_play"
+                android:tint="@color/stone_normal"
+                android:src="@{game.inProgress ? @drawable/ic_refresh : @drawable/ic_play}"
+                app:fabSize="normal"
+                tools:text="@string/start"/>
         <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
                       android:layout_weight="1" android:orientation="vertical">
             <ImageView android:layout_width="match_parent" android:layout_height="50dp"
                        android:src="@drawable/ic_stone_black" app:current="@{game.current}"
+                       app:rejectAnimation="@{game.rejected}"
                        app:player="@{game.player2.stoneColor}"/>
             <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
                       android:gravity="center"
@@ -55,8 +55,8 @@
             <TextView
                 android:layout_width="match_parent" android:layout_height="wrap_content"
                 android:gravity="center"
-                app:score="@{game.score2}"
                 android:textSize="30sp"
+                app:score="@{game.score2}"
                 tools:text="65"/>
         </LinearLayout>
     </LinearLayout>

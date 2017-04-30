@@ -12,6 +12,7 @@
         android:scaleType="fitCenter"
         app:stone="@{stone}"
         android:background="@drawable/stone_background"
+        android:foreground="?android:attr/selectableItemBackground"
         android:padding="2dp"
         android:layout_marginEnd="1dp"
         android:layout_marginBottom="1dp"

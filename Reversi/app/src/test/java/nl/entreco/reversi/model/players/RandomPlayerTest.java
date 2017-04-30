@@ -67,7 +67,7 @@ public class RandomPlayerTest {
     public void itShouldNotifyGameCallbackItsOurTurn() throws Exception {
         subject.yourTurn("");
 
-        verify(mockGameCallback).currentPlayer(subject);
+        verify(mockGameCallback).setCurrentPlayer(subject);
     }
 
     @Test

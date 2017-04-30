@@ -5,5 +5,7 @@ import android.support.annotation.NonNull;
 public interface GameCallback {
     void submitMove(@NonNull final Player player,@NonNull final Move move);
 
-    void currentPlayer(@NonNull final Player player);
+    void setCurrentPlayer(@NonNull final Player player);
+
+    void onMoveRejected(@NonNull final Player player);
 }

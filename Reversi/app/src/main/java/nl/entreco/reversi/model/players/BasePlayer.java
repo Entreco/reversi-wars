@@ -28,16 +28,29 @@ public abstract class BasePlayer implements Player {
         ourTurn();
     }
 
+    @CallSuper
+    @Override
+    public void onMoveRejected(@NonNull String board) {
+        reject();
+    }
+
     @Override
     public final int getStoneColor() {
         return stoneColor;
     }
 
-    final void ourTurn(){
-        if (callback != null) {
-            callback.currentPlayer(this);
+    private void reject(){
+        if (callback != null){
+            callback.onMoveRejected(this);
         }
     }
+
+    private void ourTurn(){
+        if (callback != null) {
+            callback.setCurrentPlayer(this);
+        }
+    }
+
     final void submitMove(@NonNull final Move move) {
         if (callback != null) {
             callback.submitMove(this, move);

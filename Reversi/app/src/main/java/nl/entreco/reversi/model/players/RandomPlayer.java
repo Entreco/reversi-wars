@@ -25,6 +25,7 @@ public class RandomPlayer extends BasePlayer {
 
     @Override
     public void onMoveRejected(@NonNull final String board) {
+        super.onMoveRejected(board);
         getHandler().postDelayed(new Runnable() {
             @Override
             public void run() {

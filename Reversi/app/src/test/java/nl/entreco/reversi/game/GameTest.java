@@ -72,7 +72,7 @@ public class GameTest {
 
     @Test
     public void currentPlayer() throws Exception {
-        subject.currentPlayer(mockP1);
+        subject.setCurrentPlayer(mockP1);
 
         assertEquals(mockP1, subject.current.get());
         verify(mockAdapter).setCurrentPlayer(mockP1, subject);

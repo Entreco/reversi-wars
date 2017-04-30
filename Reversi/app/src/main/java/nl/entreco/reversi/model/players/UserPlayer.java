@@ -18,6 +18,7 @@ public class UserPlayer extends BasePlayer {
 
     @Override
     public void onMoveRejected(@NonNull String board) {
+        super.onMoveRejected(board);
         // Let user Click again...
     }
 
