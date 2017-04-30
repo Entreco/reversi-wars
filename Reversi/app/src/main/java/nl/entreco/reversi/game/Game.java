@@ -3,9 +3,11 @@ package nl.entreco.reversi.game;
 import android.databinding.BindingAdapter;
 import android.databinding.ObservableBoolean;
 import android.databinding.ObservableField;
+import android.databinding.ObservableInt;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.View;
+import android.widget.TextView;
 
 import java.util.List;
 
@@ -20,7 +22,9 @@ public class Game implements GameCallback {
 
     @NonNull public final ObservableBoolean inProgress;
     @NonNull public final ObservableField<BasePlayer> player1;
+    @NonNull public final ObservableInt score1;
     @NonNull public final ObservableField<BasePlayer> player2;
+    @NonNull public final ObservableInt score2;
     @NonNull public final ObservableField<Player> current;
     @NonNull private final BoardAdapter adapter;
     @NonNull private final Arbiter arbiter;
@@ -33,6 +37,8 @@ public class Game implements GameCallback {
 
         this.player1 = new ObservableField<>(p1);
         this.player2 = new ObservableField<>(p2);
+        this.score1 = new ObservableInt(0);
+        this.score2 = new ObservableInt(0);
         this.current = new ObservableField<>();
         this.inProgress = new ObservableBoolean(false);
 
@@ -45,6 +51,8 @@ public class Game implements GameCallback {
         this.player2.get().setCallback(this);
 
         this.arbiter.restart();
+        this.score1.set(2);
+        this.score2.set(2);
 
         this.inProgress.set(true);
         this.adapter.start();
@@ -55,6 +63,15 @@ public class Game implements GameCallback {
 
         final List<Stone> flipped = arbiter.onMoveReceived(player, move.toString());
         if (flipped.size() > 0) {
+
+            if (player.getStoneColor() == Stone.WHITE) {
+                score1.set(score1.get() + 1 + flipped.size());
+                score2.set(score2.get() - flipped.size());
+            } else {
+                score1.set(score1.get() - flipped.size());
+                score2.set(score2.get() + 1 + flipped.size());
+            }
+
             adapter.update(move, player.getStoneColor());
             arbiter.notifyNextPlayer(player);
         }
@@ -66,14 +83,20 @@ public class Game implements GameCallback {
         adapter.setCurrentPlayer(player, this);
     }
 
+
+    @BindingAdapter("score")
+    public static void updateScore(@NonNull final TextView view, int score) {
+        view.setText(String.valueOf(score));
+    }
+
     @BindingAdapter({"player", "current"})
     public static void setPlayerHere(@NonNull final View view, @Stone.Color int stone,
                                      @Nullable final Player player) {
         if (player != null) {
             if (stone == player.getStoneColor()) {
-                view.animate().scaleX(1.1F).scaleY(1.1F).alpha(1F).start();
+                view.animate().scaleX(1F).scaleY(1F).alpha(1F).start();
             } else {
-                view.animate().scaleX(.2F).scaleY(.2F).alpha(.8F).start();
+                view.animate().scaleX(.8F).scaleY(.8F).alpha(.5F).start();
             }
         }
     }
