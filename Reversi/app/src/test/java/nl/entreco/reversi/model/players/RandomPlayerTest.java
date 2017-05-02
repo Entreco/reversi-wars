@@ -34,12 +34,13 @@ public class RandomPlayerTest {
 
     @Before
     public void setUp() throws Exception {
-        subject = new RandomPlayer(Stone.BLACK) {
+        subject = new RandomPlayer() {
             @Override
             public Handler getHandler() {
                 return mockHandler;
             }
         };
+        subject.setStoneColor(Stone.BLACK);
         subject.setCallback(mockGameCallback);
     }
 

@@ -4,14 +4,13 @@ import android.os.Handler;
 import android.support.annotation.NonNull;
 
 import nl.entreco.reversi.model.Move;
-import nl.entreco.reversi.model.Stone;
 
 public class RandomPlayer extends BasePlayer {
 
     private final Handler handler;
 
-    public RandomPlayer(@Stone.Color int stoneColor) {
-        super(stoneColor);
+    public RandomPlayer() {
+        super();
         handler = new Handler();
     }
 
@@ -32,6 +31,12 @@ public class RandomPlayer extends BasePlayer {
                 yourTurn(board);
             }
         }, 10);
+    }
+
+    @NonNull
+    @Override
+    public String getName() {
+        return "RandomBot";
     }
 
     @Override

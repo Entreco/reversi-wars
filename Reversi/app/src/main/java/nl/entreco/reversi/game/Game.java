@@ -1,8 +1,8 @@
 package nl.entreco.reversi.game;
 
-import android.databinding.ObservableBoolean;
 import android.databinding.ObservableField;
 import android.databinding.ObservableInt;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 
 import java.util.List;
@@ -12,49 +12,78 @@ import nl.entreco.reversi.model.GameCallback;
 import nl.entreco.reversi.model.Move;
 import nl.entreco.reversi.model.Player;
 import nl.entreco.reversi.model.Stone;
-import nl.entreco.reversi.model.players.BasePlayer;
+import nl.entreco.reversi.model.players.RandomPlayer;
+import nl.entreco.reversi.model.players.UserPlayer;
 
 public class Game implements GameCallback {
 
-    @NonNull public final ObservableBoolean inProgress;
-    @NonNull public final ObservableField<BasePlayer> player1;
     @NonNull public final ObservableInt score1;
-    @NonNull public final ObservableField<BasePlayer> player2;
     @NonNull public final ObservableInt score2;
+    @NonNull public final ObservableInt lastMovePosition;
+    @NonNull public final ObservableField<Player> winner;
     @NonNull public final ObservableField<Player> current;
     @NonNull public final ObservableField<Player> rejected;
+
+    @NonNull public final ObservableField<Player> player1;
+    @NonNull public final ObservableField<Player> player2;
+
     @NonNull private final BoardAdapter adapter;
     @NonNull private final Arbiter arbiter;
 
-    public Game(@NonNull final BoardAdapter adapter, @NonNull final Arbiter arbiter,
-                @NonNull final BasePlayer p1, @NonNull final BasePlayer p2) {
+    public Game(@NonNull final BoardAdapter adapter, @NonNull final Arbiter arbiter) {
 
         this.adapter = adapter;
         this.arbiter = arbiter;
 
-        this.player1 = new ObservableField<>(p1);
-        this.player2 = new ObservableField<>(p2);
+        this.player1 = new ObservableField<>();
+        this.player2 = new ObservableField<>();
+
         this.score1 = new ObservableInt(0);
         this.score2 = new ObservableInt(0);
+        this.winner = new ObservableField<>();
         this.current = new ObservableField<>();
         this.rejected = new ObservableField<>();
-        this.inProgress = new ObservableBoolean(false);
-
-        this.arbiter.addPlayer(p1);
-        this.arbiter.addPlayer(p2);
+        this.lastMovePosition = new ObservableInt();
     }
 
     public void startGame() {
+
+        addDefaultPlayersIfEmpty();
+        this.winner.set(null);
+
+        this.arbiter.addPlayer(player1.get());
+        this.arbiter.addPlayer(player2.get());
+
         this.player1.get().setCallback(this);
         this.player2.get().setCallback(this);
 
-        this.arbiter.restart();
+        this.arbiter.start(this);
         this.score1.set(2);
         this.score2.set(2);
 
-        this.inProgress.set(true);
         this.adapter.start();
     }
+
+    private void addDefaultPlayersIfEmpty() {
+        if (player1.get() == null || player2.get() == null) {
+
+            final Player p1 = new UserPlayer();
+            p1.setStoneColor(Stone.WHITE);
+
+            final Player p2 = new RandomPlayer();
+            p1.setStoneColor(Stone.BLACK);
+
+            this.player1.set(p1);
+            this.player2.set(p2);
+        }
+    }
+
+    @Override
+    public void setCurrentPlayer(@NonNull Player player) {
+        current.set(player);
+        adapter.setCurrentPlayer(player, this);
+    }
+
 
     @Override
     public void submitMove(@NonNull final Player player, @NonNull final Move move) {
@@ -70,19 +99,48 @@ public class Game implements GameCallback {
                 score2.set(score2.get() + 1 + flipped.size());
             }
 
+
+            lastMovePosition.set(arbiter.getBoard().getItemPosition(move));
             adapter.update(move, player.getStoneColor());
             arbiter.notifyNextPlayer(player);
         }
     }
 
     @Override
-    public void setCurrentPlayer(@NonNull Player player) {
-        current.set(player);
-        adapter.setCurrentPlayer(player, this);
-    }
-
-    @Override
     public void onMoveRejected(@NonNull Player player) {
         rejected.set(player);
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                rejected.set(null);
+            }
+        }, 250);
+    }
+
+
+    @Override
+    public void onGameFinished(int score) {
+        current.set(null);
+        winner.set(score <= Stone.WHITE ? player1.get() : player2.get());
+    }
+
+    public void clear() {
+        this.player1.set(null);
+        this.player2.set(null);
+
+        this.score1.set(0);
+        this.score2.set(0);
+        this.winner.set(null);
+        this.current.set(null);
+        this.rejected.set(null);
+    }
+
+    public void setWhitePlayer(Player player) {
+        player.setStoneColor(Stone.WHITE);
+        this.player1.set(player);
+    }
+    public void setBlackPlayer(Player player) {
+        player.setStoneColor(Stone.BLACK);
+        this.player2.set(player);
     }
 }

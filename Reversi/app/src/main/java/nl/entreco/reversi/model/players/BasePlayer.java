@@ -12,14 +12,25 @@ import nl.entreco.reversi.model.Stone;
 public abstract class BasePlayer implements Player {
 
     @Nullable private GameCallback callback;
-    private final int stoneColor;
+    private int stoneColor;
 
-    BasePlayer(@Stone.Color int stoneColor){
-        this.stoneColor = stoneColor;
+    BasePlayer(){
+        stoneColor = Stone.WHITE;
     }
 
-    public void setCallback(@Nullable GameCallback callback) {
+    @Override
+    public final void setCallback(@Nullable GameCallback callback) {
         this.callback = callback;
+    }
+
+    @Override
+    public final int getStoneColor() {
+        return stoneColor;
+    }
+
+    @Override
+    public final void setStoneColor(int stoneColor) {
+        this.stoneColor = stoneColor;
     }
 
     @CallSuper
@@ -32,11 +43,6 @@ public abstract class BasePlayer implements Player {
     @Override
     public void onMoveRejected(@NonNull String board) {
         reject();
-    }
-
-    @Override
-    public final int getStoneColor() {
-        return stoneColor;
     }
 
     private void reject(){

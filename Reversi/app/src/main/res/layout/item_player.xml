@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+>
+    <data>
+        <variable name="player" type="nl.entreco.reversi.model.Player"/>
+        <variable name="listener" type="nl.entreco.reversi.PlayerSelectedListener"/>
+    </data>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginBottom="1dp"
+        android:layout_marginEnd="1dp"
+        android:padding="6dp"
+        android:foreground="?android:attr/selectableItemBackground"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:gravity="center_vertical"
+        android:textSize="22sp"
+        android:drawableEnd="@{player.human ? @drawable/ic_human : @drawable/ic_computer}"
+        android:text="@{player.name}"
+        android:onClick="@{() -> listener.onPlayerSelected(player)}"
+        tools:text="Random Bot"
+        tools:drawableEnd="@drawable/ic_human"
+    />
+
+</layout>

@@ -63,6 +63,7 @@ public class BoardAdapter extends RecyclerView.Adapter<StoneHolder>
     void update(Move move, @Stone.Color int stoneColor) {
         List<Stone> flipped = board.apply(move, stoneColor);
         notifyChanged(board.getItemPosition(move));
+
         for (final Stone turned : flipped) {
             notifyChanged(board.getItemPosition(turned.row(), turned.col()));
         }

@@ -2,75 +2,93 @@
 <layout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:reversi="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+        <import alias="View" type="android.view.View"/>
         <variable name="game" type="nl.entreco.reversi.game.Game"/>
     </data>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="horizontal"
-        tools:showIn="@layout/activity_reversi">
+    <LinearLayout android:layout_width="match_parent"
+                  android:layout_height="@dimen/score_view_height"
 
+                  android:orientation="vertical">
+        <TextView android:layout_width="match_parent"
+                  android:layout_height="wrap_content"
+                  android:gravity="center"
+                  android:text="@{@string/winner(game.winner.name)}"
+                  android:textColor="@color/colorAccent"
+                  android:padding="2dp"
+                  android:textSize="20sp"
+                  reversi:winner="@{game.winner}"
+                  tools:text="@string/winner"/>
         <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
             android:layout_weight="1"
-            android:gravity="center"
-            android:orientation="vertical">
+            android:orientation="horizontal"
+            tools:showIn="@layout/activity_reversi">
 
-            <ImageView
-                android:layout_width="match_parent" android:layout_height="50dp"
-                android:src="@drawable/ic_stone_white" app:current="@{game.current}"
-                app:player="@{game.player1.stoneColor}"
-                app:rejectAnimation="@{game.rejected}"/>
-            <TextView
-                android:layout_width="match_parent" android:layout_height="wrap_content"
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
                 android:gravity="center"
-                android:text="@string/player_1"/>
-            <TextView
-                android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:layout_width="match_parent" android:layout_height="50dp"
+                    android:src="@drawable/ic_stone_white" app:current="@{game.current}"
+                    app:player="@{game.player1.stoneColor}"
+                    app:rejectAnimation="@{game.rejected}"/>
+                <TextView
+                    android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="@{game.player1.name}"/>
+                <TextView
+                    android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:textSize="30sp"
+                    app:score="@{game.score1}"
+                    tools:text="65"/>
+            </LinearLayout>
+
+
+            <android.support.design.widget.FloatingActionButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" android:layout_gravity="center"
+                android:onClick="@{() -> game.startGame()}"
+                android:src="@{game.player1 != null ? @drawable/ic_refresh : @drawable/ic_play}"
+                android:tint="@color/stone_normal"
+                app:fabSize="normal"
+                tools:src="@drawable/ic_play"
+                tools:text="@string/start"/>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
                 android:gravity="center"
-                android:textSize="30sp"
-                app:score="@{game.score1}"
-                tools:text="65"/>
-        </LinearLayout>
+                android:orientation="vertical">
 
-
-        <android.support.design.widget.FloatingActionButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" android:layout_gravity="center"
-            android:onClick="@{() -> game.startGame()}"
-            android:src="@{game.inProgress ? @drawable/ic_refresh : @drawable/ic_play}"
-            android:tint="@color/stone_normal"
-            app:fabSize="normal"
-            tools:src="@drawable/ic_play"
-            tools:text="@string/start"/>
-
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:orientation="vertical">
-
-            <ImageView
-                android:layout_width="match_parent" android:layout_height="50dp"
-                android:src="@drawable/ic_stone_black" app:current="@{game.current}"
-                app:player="@{game.player2.stoneColor}"
-                app:rejectAnimation="@{game.rejected}"/>
-            <TextView
-                android:layout_width="match_parent" android:layout_height="wrap_content"
-                android:gravity="center"
-                android:text="@string/player_2"/>
-            <TextView
-                android:layout_width="match_parent" android:layout_height="wrap_content"
-                android:gravity="center"
-                android:textSize="30sp"
-                app:score="@{game.score2}"
-                tools:text="65"/>
+                <ImageView
+                    android:layout_width="match_parent" android:layout_height="50dp"
+                    android:src="@drawable/ic_stone_black" app:current="@{game.current}"
+                    app:player="@{game.player2.stoneColor}"
+                    app:rejectAnimation="@{game.rejected}"/>
+                <TextView
+                    android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="@{game.player2.name}"/>
+                <TextView
+                    android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:textSize="30sp"
+                    app:score="@{game.score2}"
+                    tools:text="65"/>
+            </LinearLayout>
         </LinearLayout>
     </LinearLayout>
+
 </layout>

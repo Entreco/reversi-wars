@@ -9,8 +9,9 @@ public interface Arbiter {
 
     List<Player> getPlayers();
 
-    void startMatch();
+    void start(@NonNull final GameCallback gameCallback);
 
+    @NonNull
     List<Stone> onMoveReceived(@NonNull final Player player, String move);
 
     void notifyNextPlayer(@NonNull final Player previousPlayer);
@@ -23,5 +24,4 @@ public interface Arbiter {
     @NonNull
     Player getCurrentPlayer();
 
-    void restart();
 }

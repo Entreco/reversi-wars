@@ -13,7 +13,6 @@ import nl.entreco.reversi.model.Arbiter;
 import nl.entreco.reversi.model.Move;
 import nl.entreco.reversi.model.Player;
 import nl.entreco.reversi.model.Stone;
-import nl.entreco.reversi.model.players.BasePlayer;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
@@ -28,18 +27,20 @@ public class GameTest {
 
     @Mock private BoardAdapter mockAdapter;
     @Mock private Arbiter mockArbiter;
-    @Mock private BasePlayer mockP1;
-    @Mock private BasePlayer mockP2;
+    @Mock private Player mockP1;
+    @Mock private Player mockP2;
 
     @Mock private Move mockMove;
 
     @Before
     public void setUp() throws Exception {
-        subject = new Game(mockAdapter, mockArbiter, mockP1, mockP2);
+        subject = new Game(mockAdapter, mockArbiter);
     }
 
     @Test
     public void itShouldSetGameCallbackOnPlayersOnStart() throws Exception {
+        subject.setWhitePlayer(mockP1);
+        subject.setBlackPlayer(mockP2);
         subject.startGame();
 
         verify(mockP1).setCallback(subject);
@@ -50,7 +51,7 @@ public class GameTest {
     public void itShouldRestartArbiterOnStart() throws Exception {
         subject.startGame();
 
-        verify(mockArbiter).restart();
+        verify(mockArbiter).start(subject);
     }
 
     @Test

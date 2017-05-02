@@ -14,7 +14,8 @@ public class UserPlayerTest {
 
     @Before
     public void setUp() throws Exception {
-        subject = new UserPlayer(Stone.WHITE);
+        subject = new UserPlayer();
+        subject.setStoneColor(Stone.WHITE);
     }
 
     @Test

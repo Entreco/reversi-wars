@@ -3,12 +3,19 @@ package nl.entreco.reversi.model;
 import android.support.annotation.NonNull;
 
 public interface Player {
+
+    void setCallback(@NonNull GameCallback gameCallback);
+
+    @NonNull
+    String getName();
+
     void yourTurn(@NonNull final String board);
 
     void onMoveRejected(@NonNull final String board);
 
     @Stone.Color int getStoneColor();
 
-    boolean isHuman();
+    void setStoneColor(@Stone.Color int stoneColor);
 
+    boolean isHuman();
 }

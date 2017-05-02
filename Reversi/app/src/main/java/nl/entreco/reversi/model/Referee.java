@@ -1,6 +1,8 @@
 package nl.entreco.reversi.model;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.annotation.VisibleForTesting;
 import android.util.Log;
 
 import com.google.gson.Gson;
@@ -21,6 +23,7 @@ public class Referee implements Arbiter {
     @NonNull private final Gson gson;
     @NonNull private final Board board;
 
+    @Nullable private GameCallback gameCallback;
     private int currentPlayer;
 
     public Referee(@NonNull final GameSettings settings) {
@@ -44,14 +47,15 @@ public class Referee implements Arbiter {
 
 
     @Override
-    public void restart() {
-        currentPlayer = settings.getStartIndex();
-        board.restart();
+    public void start(@NonNull final GameCallback gameCallback) {
+        this.gameCallback = gameCallback;
+        this.currentPlayer = settings.getStartIndex();
+        this.board.restart();
         startMatch();
     }
 
-    @Override
-    public void startMatch() {
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    void startMatch() {
         if (playersList.size() <= 1)
             throw new IllegalStateException("Need at least 2 players to start");
 
@@ -60,7 +64,7 @@ public class Referee implements Arbiter {
 
     }
 
-    void switchToPlayer(@NonNull final Player player) {
+    private void switchToPlayer(@NonNull final Player player) {
         Log.d(TAG,
                 "switchToPlayer -> player.yourTurn():" + player + " currentPlayer:" +
                         currentPlayer);
@@ -76,9 +80,24 @@ public class Referee implements Arbiter {
     }
 
     private void notifyGameFinished() {
-        // TODO: Show Game Finished
+        if (this.gameCallback != null) {
+            final int score = getScore();
+            this.gameCallback.onGameFinished(score);
+        } else {
+            Log.w(TAG, "notifyGameFinished() but gameCallback is null");
+        }
+        this.gameCallback = null;
     }
 
+    private int getScore() {
+        int score = 0;
+        for (final Stone stone : board) {
+            score += stone.color();
+        }
+        return score;
+    }
+
+    @NonNull
     @Override
     public List<Stone> onMoveReceived(@NonNull Player player, String move) {
         Log.d(TAG, "onMoveReceived -> player:" + player + " move:" + move);

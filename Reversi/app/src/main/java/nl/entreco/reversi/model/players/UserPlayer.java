@@ -2,12 +2,10 @@ package nl.entreco.reversi.model.players;
 
 import android.support.annotation.NonNull;
 
-import nl.entreco.reversi.model.Stone;
-
 public class UserPlayer extends BasePlayer {
 
-    public UserPlayer(@Stone.Color int stoneColor) {
-        super(stoneColor);
+    public UserPlayer() {
+        super();
     }
 
     @Override
@@ -20,6 +18,12 @@ public class UserPlayer extends BasePlayer {
     public void onMoveRejected(@NonNull String board) {
         super.onMoveRejected(board);
         // Let user Click again...
+    }
+
+    @NonNull
+    @Override
+    public String getName() {
+        return "Human";
     }
 
     @Override

@@ -37,6 +37,7 @@ public class RefereeTest {
 
     @Mock private Player mockPlayer;
     @Mock private Player mockOpponent;
+    @Mock private GameCallback mockGameCallback;
 
     @Captor private ArgumentCaptor<TimerTask> timerTask;
 
@@ -105,13 +106,13 @@ public class RefereeTest {
 
     @Test(expected = IllegalStateException.class)
     public void itShouldThrowErrorWhenTryingToRestartWithoutPlayers() throws Exception {
-        subject.restart();
+        subject.start(mockGameCallback);
     }
 
     @Test
     public void itShouldRestartWhenPlayersAlreadyAdded() throws Exception {
         simulateMatchStarted(mockPlayer, mockOpponent);
-        subject.restart();
+        subject.start(mockGameCallback);
 
         assertFalse(subject.getPlayers().isEmpty());
         assertEquals(2, subject.getPlayers().size());
@@ -122,7 +123,7 @@ public class RefereeTest {
         simulateMatchStarted(mockPlayer, mockOpponent);
         simulateTurn(mockPlayer, VALID_MOVE_1);
 
-        subject.restart();
+        subject.start(mockGameCallback);
 
         assertTrue(subject.getCurrentPlayer().equals(mockPlayer));
     }

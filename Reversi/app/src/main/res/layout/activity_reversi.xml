@@ -1,9 +1,13 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:reversi="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
 >
 
     <data>
+        <import type="me.tatarka.bindingcollectionadapter2.LayoutManagers"/>
         <import alias="stone" type="nl.entreco.reversi.model.Stone.Color"/>
+        <variable name="behaviour" type="android.support.design.widget.BottomSheetBehavior"/>
         <variable name="arbiter" type="nl.entreco.reversi.model.Arbiter"/>
         <variable name="viewModel" type="nl.entreco.reversi.ReversiViewModel"/>
     </data>
@@ -13,24 +17,59 @@
         android:layout_height="match_parent"
         android:background="#ffffff">
 
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/reversiBoard"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#ccc"
+            reversi:lastMove="@{viewModel.game.lastMovePosition}"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        />
+
         <LinearLayout
+            android:id="@+id/bottomSheet"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:background="#fff"
             android:orientation="vertical"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior">
+            app:behavior_hideable="false"
+            app:behavior_peekHeight="@dimen/score_view_height"
+            app:elevation="8dp"
+            app:layout_behavior="@string/bottom_sheet_behavior"
+            reversi:behaviour="@{behaviour}"
+            reversi:game="@{viewModel.game}"
+            reversi:winner="@{viewModel.game.winner}">
 
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/recyclerView"
+            <include android:id="@+id/score_view"
+                     layout="@layout/score_view"
+                     app:game="@{viewModel.game}"/>
+
+
+            <View android:layout_width="match_parent" android:layout_height="1dp"
+                  android:layout_marginTop="8dp"
+                  android:background="@drawable/hline"/>
+            <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="#ccc"
-            />
+                android:gravity="center"
+                android:padding="8dp"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:background="@color/stone_normal"
+                reversi:player1="@{viewModel.game.player1}"
+                reversi:player2="@{viewModel.game.player2}"
+                tools:text="@string/select_player_1"/>
 
-            <include android:id="@+id/score_view" layout="@layout/score_view"
-                     android:layout_width="match_parent"
-                     android:layout_height="0dp"
-                     android:layout_weight="1"
-                     app:game="@{viewModel.game}"/>
+            <View android:layout_width="match_parent" android:layout_height="1dp"
+                  android:background="@drawable/hline"/>
+
+            <android.support.v7.widget.RecyclerView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:itemBinding="@{viewModel.playersBinding}"
+                app:items="@{viewModel.players}"
+                app:layoutManager="@{LayoutManagers.linear()}"/>
 
         </LinearLayout>
 
