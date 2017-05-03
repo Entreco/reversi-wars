@@ -21,8 +21,10 @@ public class FetchPlayersUsecase {
 
     public void fetch() {
         foundPlayer(new UserPlayer());
-        foundPlayer(new RandomPlayer());
         foundPlayer(new UserPlayer());
+        foundPlayer(new RandomPlayer());
+        foundPlayer(new RandomPlayer());
+        foundPlayer(new SpiralPlayer());
         foundPlayer(new SpiralPlayer());
         foundPlayer(new BeatMePlayer());
     }

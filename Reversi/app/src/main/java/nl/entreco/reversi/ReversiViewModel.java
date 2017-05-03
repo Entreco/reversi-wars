@@ -54,6 +54,8 @@ public class ReversiViewModel implements FetchPlayersUsecase.Callback, PlayerSel
     @Override
     public void onPlayerSelected(@NonNull Player player) {
 
+        players.remove(player);
+
         // Add Player to game
         if(player1.get() == null){
             player1.set(player);
