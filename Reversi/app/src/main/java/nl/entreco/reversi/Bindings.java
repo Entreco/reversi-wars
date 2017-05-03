@@ -4,7 +4,6 @@ import android.databinding.BindingAdapter;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BottomSheetBehavior;
-import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -55,14 +54,11 @@ public class Bindings {
                                         @Nullable final Player player1,
                                         @Nullable final Player player2) {
         if (player1 == null) {
-            view.setText(R.string.select_player_1);
-            view.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_stone_white, 0);
+            AnimationUtils.crossFade(view, R.string.select_player_1, R.drawable.ic_stone_white);
         } else if (player2 == null) {
-            view.setText(R.string.select_player_2);
-            view.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_stone_black, 0);
+            AnimationUtils.crossFade(view, R.string.select_player_2, R.drawable.ic_stone_black);
         } else {
-            view.setText("");
-            view.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
+            AnimationUtils.crossFade(view, 0, 0);
         }
     }
 
@@ -76,13 +72,6 @@ public class Bindings {
 
         if (player != null) {
             AnimationUtils.current(view, stone, player);
-        }
-    }
-
-    @BindingAdapter("lastMove")
-    public static void doShowLastMoveOnboard(@NonNull final RecyclerView view, final int move){
-        if(move > 0){
-            view.getLayoutManager().findViewByPosition(move).setSelected(true);
         }
     }
 

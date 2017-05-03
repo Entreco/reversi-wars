@@ -34,7 +34,7 @@ public class ReversiActivity extends AppCompatActivity {
         final ReversiViewModel viewModel = new ReversiViewModel(game, new FetchPlayersUsecase());
         final BottomSheetBehavior<? extends View> behavior =
                 BottomSheetBehavior.from(binding.bottomSheet);
-        behavior.setBottomSheetCallback(new ReloadCallback(behavior, viewModel));
+        behavior.setBottomSheetCallback(new ReloadCallback(viewModel));
 
         binding.setBehaviour(behavior);
         binding.setArbiter(ref);

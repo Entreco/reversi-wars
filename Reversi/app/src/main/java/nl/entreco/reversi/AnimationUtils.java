@@ -3,8 +3,13 @@ package nl.entreco.reversi;
 import android.animation.Animator;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
+import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
+import android.support.annotation.StringRes;
+import android.support.transition.TransitionManager;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.TextView;
 
 import nl.entreco.reversi.model.Player;
 import nl.entreco.reversi.model.Stone;
@@ -50,5 +55,21 @@ public class AnimationUtils {
         } else {
             view.animate().scaleX(.6F).scaleY(.6F).alpha(.5F).start();
         }
+    }
+
+    public static void crossFade(@NonNull final TextView view, @StringRes int text, @DrawableRes int drawableRight) {
+        TransitionManager.beginDelayedTransition((ViewGroup) view.getParent());
+        if(text > 0) {
+            view.setText(text);
+        } else {
+            view.setText("");
+        }
+
+        if(drawableRight > 0) {
+            view.setCompoundDrawablesWithIntrinsicBounds(0, 0, drawableRight, 0);
+        } else {
+            view.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
+        }
+
     }
 }

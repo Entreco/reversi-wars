@@ -24,4 +24,5 @@ public interface Arbiter {
     @NonNull
     Player getCurrentPlayer();
 
+    void clear();
 }

@@ -19,7 +19,6 @@ public class Game implements GameCallback {
 
     @NonNull public final ObservableInt score1;
     @NonNull public final ObservableInt score2;
-    @NonNull public final ObservableInt lastMovePosition;
     @NonNull public final ObservableField<Player> winner;
     @NonNull public final ObservableField<Player> current;
     @NonNull public final ObservableField<Player> rejected;
@@ -43,7 +42,6 @@ public class Game implements GameCallback {
         this.winner = new ObservableField<>();
         this.current = new ObservableField<>();
         this.rejected = new ObservableField<>();
-        this.lastMovePosition = new ObservableInt();
     }
 
     public void startGame() {
@@ -99,8 +97,6 @@ public class Game implements GameCallback {
                 score2.set(score2.get() + 1 + flipped.size());
             }
 
-
-            lastMovePosition.set(arbiter.getBoard().getItemPosition(move));
             adapter.update(move, player.getStoneColor());
             arbiter.notifyNextPlayer(player);
         }
@@ -125,6 +121,7 @@ public class Game implements GameCallback {
     }
 
     public void clear() {
+        this.arbiter.clear();
         this.player1.set(null);
         this.player2.set(null);
 

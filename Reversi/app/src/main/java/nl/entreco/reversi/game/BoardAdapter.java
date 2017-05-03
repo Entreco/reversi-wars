@@ -60,22 +60,28 @@ public class BoardAdapter extends RecyclerView.Adapter<StoneHolder>
         }
     }
 
+    void setCurrentPlayer(@NonNull final Player player,
+                          @NonNull final GameCallback callback) {
+        this.currentPlayer = player;
+        if (player.isHuman()) {
+            this.gameCallback = callback;
+        } else {
+            this.gameCallback = null;
+        }
+    }
+
+    void start() {
+        if(shouldAnimate()){
+            notifyDataSetChanged();
+        }
+    }
+
     void update(Move move, @Stone.Color int stoneColor) {
         List<Stone> flipped = board.apply(move, stoneColor);
         notifyChanged(board.getItemPosition(move));
 
         for (final Stone turned : flipped) {
             notifyChanged(board.getItemPosition(turned.row(), turned.col()));
-        }
-    }
-
-    void setCurrentPlayer(@NonNull final Player player,
-                                 @NonNull final GameCallback callback) {
-        this.currentPlayer = player;
-        if (player.isHuman()) {
-            this.gameCallback = callback;
-        } else {
-            this.gameCallback = null;
         }
     }
 
@@ -94,11 +100,5 @@ public class BoardAdapter extends RecyclerView.Adapter<StoneHolder>
     @Nullable
     GameCallback getGameCallback() {
         return gameCallback;
-    }
-
-    void start() {
-        if(shouldAnimate()){
-            notifyDataSetChanged();
-        }
     }
 }

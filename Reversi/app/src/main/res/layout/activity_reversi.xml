@@ -23,7 +23,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="#ccc"
-            reversi:lastMove="@{viewModel.game.lastMovePosition}"
             app:layout_behavior="@string/appbar_scrolling_view_behavior"
         />
 
@@ -57,10 +56,9 @@
                 android:paddingStart="16dp"
                 android:paddingEnd="16dp"
                 android:background="@color/stone_normal"
-                reversi:player1="@{viewModel.game.player1}"
-                reversi:player2="@{viewModel.game.player2}"
+                reversi:player1="@{viewModel.player1}"
+                reversi:player2="@{viewModel.player2}"
                 tools:text="@string/select_player_1"/>
-
             <View android:layout_width="match_parent" android:layout_height="1dp"
                   android:background="@drawable/hline"/>
 

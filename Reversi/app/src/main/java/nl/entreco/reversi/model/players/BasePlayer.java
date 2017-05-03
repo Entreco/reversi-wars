@@ -1,5 +1,6 @@
 package nl.entreco.reversi.model.players;
 
+import android.os.Handler;
 import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -11,11 +12,18 @@ import nl.entreco.reversi.model.Stone;
 
 public abstract class BasePlayer implements Player {
 
+    @NonNull private final Handler handler;
     @Nullable private GameCallback callback;
     private int stoneColor;
 
     BasePlayer(){
         stoneColor = Stone.WHITE;
+        handler = new Handler();
+    }
+
+    @NonNull
+    protected Handler getHandler() {
+        return handler;
     }
 
     @Override

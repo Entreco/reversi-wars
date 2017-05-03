@@ -1,6 +1,7 @@
 package nl.entreco.reversi.model.players;
 
 import android.os.Handler;
+import android.support.annotation.NonNull;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -35,8 +36,9 @@ public class RandomPlayerTest {
     @Before
     public void setUp() throws Exception {
         subject = new RandomPlayer() {
+            @NonNull
             @Override
-            public Handler getHandler() {
+            protected Handler getHandler() {
                 return mockHandler;
             }
         };

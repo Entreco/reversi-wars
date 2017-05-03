@@ -15,7 +15,6 @@ public class ReversiViewModel implements FetchPlayersUsecase.Callback, PlayerSel
     public final ObservableList<Player> players;
     public final ItemBinding<Player> playersBinding =
             ItemBinding.of(BR.player, R.layout.item_player);
-    ;
 
     public final ObservableField<Game> game;
     public final ObservableField<Player> player1;
@@ -41,8 +40,9 @@ public class ReversiViewModel implements FetchPlayersUsecase.Callback, PlayerSel
         player2.set(null);
         game.set(null);
         newGame.clear();
-        fetchPlayersUsecase.registerCallback(this);
         players.clear();
+
+        fetchPlayersUsecase.registerCallback(this);
         fetchPlayersUsecase.fetch();
     }
 
@@ -54,21 +54,23 @@ public class ReversiViewModel implements FetchPlayersUsecase.Callback, PlayerSel
     @Override
     public void onPlayerSelected(@NonNull Player player) {
 
-        players.remove(player);
-
         // Add Player to game
         if(player1.get() == null){
             player1.set(player);
         } else if(player2.get() == null){
             player2.set(player);
 
-            newGame.setWhitePlayer(player1.get());
-            newGame.setBlackPlayer(player2.get());
-
-            // Start
-            game.set(newGame);
-            newGame.startGame();
-            fetchPlayersUsecase.unregisterCallback();
+            startNewGame();
         }
+    }
+
+    private void startNewGame() {
+        newGame.setWhitePlayer(player1.get());
+        newGame.setBlackPlayer(player2.get());
+
+        // Start
+        game.set(newGame);
+        newGame.startGame();
+        fetchPlayersUsecase.unregisterCallback();
     }
 }

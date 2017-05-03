@@ -54,6 +54,13 @@ public class Referee implements Arbiter {
         startMatch();
     }
 
+    @Override
+    public void clear() {
+        this.playersList.clear();
+        this.currentPlayer = settings.getStartIndex();
+
+    }
+
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     void startMatch() {
         if (playersList.size() <= 1)
