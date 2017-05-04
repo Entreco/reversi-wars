@@ -7,11 +7,16 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.view.View;
 
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+
 import nl.entreco.reversi.data.FetchPlayersUsecase;
 import nl.entreco.reversi.databinding.ActivityReversiBinding;
 import nl.entreco.reversi.game.BoardAdapter;
 import nl.entreco.reversi.game.Game;
+import nl.entreco.reversi.model.Board;
 import nl.entreco.reversi.model.GameSettings;
+import nl.entreco.reversi.model.GameTimer;
 import nl.entreco.reversi.model.Referee;
 
 /**
@@ -28,7 +33,9 @@ public class ReversiActivity extends AppCompatActivity {
         final ActivityReversiBinding binding =
                 DataBindingUtil.setContentView(this, R.layout.activity_reversi);
 
-        final Referee ref = new Referee(new GameSettings());
+        final GameSettings settings = new GameSettings();
+        final ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
+        final Referee ref = new Referee(settings, new GameTimer(executor), new Board(settings.getBoardSize()));
         final BoardAdapter adapter = new BoardAdapter(ref);
         final Game game = new Game(adapter, ref);
         final ReversiViewModel viewModel = new ReversiViewModel(game, new FetchPlayersUsecase());
@@ -45,7 +52,7 @@ public class ReversiActivity extends AppCompatActivity {
         binding.reversiBoard.setAdapter(adapter);
 
 
-        if(savedInstanceState == null){
+        if (savedInstanceState == null) {
             viewModel.fetchPlayers();
         }
     }

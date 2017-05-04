@@ -16,7 +16,7 @@ public class GameSettings {
         return startIndex;
     }
 
-    int getBoardSize() {
+    public int getBoardSize() {
         return boardSize;
     }
 }

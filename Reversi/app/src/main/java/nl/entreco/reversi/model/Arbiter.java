@@ -21,8 +21,5 @@ public interface Arbiter {
     @NonNull
     Board getBoard();
 
-    @NonNull
-    Player getCurrentPlayer();
-
     void clear();
 }

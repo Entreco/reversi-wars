@@ -1,5 +1,7 @@
 package nl.entreco.reversi.model;
 
+import android.os.Handler;
+import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
@@ -11,26 +13,28 @@ import com.google.gson.JsonSyntaxException;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
-import nl.entreco.reversi.model.players.NotStartedPlayer;
-
-public class Referee implements Arbiter {
+public class Referee implements Arbiter, GameTimer.Callback {
 
     private static final String TAG = Referee.class.getSimpleName();
 
     @NonNull private final GameSettings settings;
+    @NonNull private final GameTimer timer;
     @NonNull private List<Player> playersList = new ArrayList<>();
     @NonNull private final Gson gson;
     @NonNull private final Board board;
 
     @Nullable private GameCallback gameCallback;
-    private int currentPlayer;
+    private volatile AtomicInteger currentPlayer;
 
-    public Referee(@NonNull final GameSettings settings) {
+    public Referee(@NonNull final GameSettings settings, @NonNull final GameTimer timer,
+                   @NonNull final Board board) {
         this.settings = settings;
+        this.timer = timer;
         this.gson = new GsonBuilder().create();
-        this.board = new Board(settings.getBoardSize());
-        this.currentPlayer = settings.getStartIndex();
+        this.board = board;
+        this.currentPlayer = new AtomicInteger(settings.getStartIndex());
     }
 
     @Override
@@ -49,7 +53,7 @@ public class Referee implements Arbiter {
     @Override
     public void start(@NonNull final GameCallback gameCallback) {
         this.gameCallback = gameCallback;
-        this.currentPlayer = settings.getStartIndex();
+        this.currentPlayer.set(settings.getStartIndex());
         this.board.restart();
         startMatch();
     }
@@ -57,7 +61,7 @@ public class Referee implements Arbiter {
     @Override
     public void clear() {
         this.playersList.clear();
-        this.currentPlayer = settings.getStartIndex();
+        this.currentPlayer.set( settings.getStartIndex() );
 
     }
 
@@ -67,18 +71,20 @@ public class Referee implements Arbiter {
             throw new IllegalStateException("Need at least 2 players to start");
 
         board.start();
-        switchToPlayer(playersList.get(currentPlayer));
+        switchPlayers();
 
     }
 
-    private void switchToPlayer(@NonNull final Player player) {
-        Log.d(TAG,
-                "switchToPlayer -> player.yourTurn():" + player + " currentPlayer:" +
-                        currentPlayer);
-
+    private void switchPlayers() {
+        final Player player = playersList.get(currentPlayer.get());
         final @Stone.Color int stoneColor = player.getStoneColor();
         if (board.canMove(stoneColor)) {
             player.yourTurn(board.toJson());
+
+            if (!player.isHuman()) {
+                timer.start(this, player, settings.getTimeout());
+            }
+
         } else if (board.canMove(-1 * stoneColor)) {
             notifyNextPlayer(player);
         } else {
@@ -93,12 +99,14 @@ public class Referee implements Arbiter {
         } else {
             Log.w(TAG, "notifyGameFinished() but gameCallback is null");
         }
+
+        this.timer.stop();
         this.gameCallback = null;
     }
 
     private int getScore() {
         int score = 0;
-        for (final Stone stone : board) {
+        for (final Stone stone : board.getStones()) {
             score += stone.color();
         }
         return score;
@@ -108,16 +116,19 @@ public class Referee implements Arbiter {
     @Override
     public List<Stone> onMoveReceived(@NonNull Player player, String move) {
         Log.d(TAG, "onMoveReceived -> player:" + player + " move:" + move);
-        if (isValidPosition(move)
-                && isPlayersTurn(player)) {
-            final List<Stone> updated = updateBoard(move, player.getStoneColor());
-            if (updated.size() > 0) {
-                return updated;
-            }
-        }
 
-        Log.d(TAG, "onMoveReceived -> onMoveRejected:" + player + " move:" + move);
-        player.onMoveRejected(board.toJson());
+        if(isPlayersTurn(player)) {
+            if (isValidPosition(move)) {
+                final List<Stone> updated = updateBoard(move, player.getStoneColor());
+                if (updated.size() > 0) {
+                    timer.stop();
+                    return updated;
+                }
+            }
+
+            Log.d(TAG, "onMoveReceived -> onMoveRejected:" + player + " move:" + move);
+            player.onMoveRejected(board.toJson());
+        }
         return new ArrayList<>(0);
     }
 
@@ -127,8 +138,8 @@ public class Referee implements Arbiter {
         return board.clone().apply(move, color);
     }
 
-    boolean isPlayersTurn(Player player) {
-        return currentPlayer == playersList.indexOf(player);
+    synchronized boolean isPlayersTurn(Player player) {
+        return currentPlayer.get() == playersList.indexOf(player);
     }
 
     boolean isValidPosition(String move) {
@@ -152,25 +163,20 @@ public class Referee implements Arbiter {
     }
 
     @Override
-    public void onTimedOut(@NonNull Player player) {
+    public void onTimedOut(@NonNull final Player player) {
         Log.d(TAG, "onTimedOut:" + player);
         notifyNextPlayer(player);
+
     }
 
     public void notifyNextPlayer(@NonNull Player previousPlayer) {
         int indexOfPreviousPlayer = playersList.indexOf(previousPlayer);
-        currentPlayer = (indexOfPreviousPlayer + 1) % playersList.size();
-        switchToPlayer(playersList.get(currentPlayer));
+        currentPlayer.set( (indexOfPreviousPlayer + 1) % playersList.size() );
+        switchPlayers();
     }
 
     @NonNull
     public Board getBoard() {
         return board;
-    }
-
-    @NonNull
-    public Player getCurrentPlayer() {
-        if (playersList.isEmpty()) return new NotStartedPlayer();
-        return playersList.get(currentPlayer);
     }
 }

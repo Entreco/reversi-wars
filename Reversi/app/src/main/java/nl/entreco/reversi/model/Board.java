@@ -1,6 +1,7 @@
 package nl.entreco.reversi.model;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.VisibleForTesting;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -8,6 +9,7 @@ import java.util.List;
 
 public class Board extends ArrayList<Stone>{
 
+    private static final long serialVersionUID = -4736231613346515717L;
     private final int boardSize;
 
     public Board(int size){
@@ -26,14 +28,14 @@ public class Board extends ArrayList<Stone>{
         set(new Move(4, 3), Stone.BLACK);
     }
 
-    int add(Move move, @Stone.Color int stoneColor) {
+    private int add(Move move, @Stone.Color int stoneColor) {
         final int itemPosition = getItemPosition(move);
         final Stone stone = new Stone(move.getRow(), move.getCol(), stoneColor);
         add(itemPosition, stone);
         return 1;
     }
 
-    Stone set(Move move, @Stone.Color int stoneColor) {
+    private Stone set(Move move, @Stone.Color int stoneColor) {
         final int itemPosition = getItemPosition(move);
         final Stone stone = new Stone(move.getRow(), move.getCol(), stoneColor);
         return set(itemPosition, stone);
@@ -195,10 +197,16 @@ public class Board extends ArrayList<Stone>{
         for (int rows = 0; rows < boardSize; rows++) {
             for (int cols = 0; cols < boardSize; cols++) {
                 @Stone.Color final int stone = get(getItemPosition(rows, cols)).color();
-                switch(stone){
-                    case Stone.WHITE: builder.append("x"); break;
-                    case Stone.BLACK: builder.append("o"); break;
-                    default: builder.append("_");
+                switch (stone) {
+                    case Stone.WHITE:
+                        builder.append("x");
+                        break;
+                    case Stone.BLACK:
+                        builder.append("o");
+                        break;
+                    case Stone.EMPTY:
+                    default:
+                        builder.append("_");
                 }
 
                 if (cols < boardSize - 1) {
@@ -213,7 +221,7 @@ public class Board extends ArrayList<Stone>{
         return builder.toString();
     }
 
-    public String toJson() {
+    String toJson() {
         StringBuilder builder = new StringBuilder("{\"size\":");
         builder.append(boardSize);
         builder.append(",");
@@ -235,7 +243,7 @@ public class Board extends ArrayList<Stone>{
         return builder.append("]}").toString();
     }
 
-    public void restart() {
+    void restart() {
         clear();
         init();
         start();
@@ -274,7 +282,7 @@ public class Board extends ArrayList<Stone>{
     }
 
     @NonNull
-    public List<Move> findAllMoves(@Stone.Color int stone) {
+    List<Move> findAllMoves(@Stone.Color int stone) {
         final Board copy = clone();
 
         // 1) Find Empty Stones
@@ -302,11 +310,17 @@ public class Board extends ArrayList<Stone>{
 
     @Override
     public Board clone() {
+        super.clone();
         Board clone = new Board(boardSize);
         clone.clear();
         for (final Stone item : this){
             clone.add(item.clone());
         }
         return clone;
+    }
+
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+    List<Stone> getStones() {
+        return this;
     }
 }

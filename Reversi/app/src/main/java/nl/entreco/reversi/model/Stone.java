@@ -7,7 +7,9 @@ import java.lang.annotation.Retention;
 import static java.lang.annotation.RetentionPolicy.SOURCE;
 
 public class Stone {
-    public @Color int color() {
+    public
+    @Color
+    int color() {
         return value;
     }
 
@@ -16,6 +18,7 @@ public class Stone {
     public @interface Color {
 
     }
+
     public static final @Color int WHITE = -1;
     public static final @Color int BLACK = 1;
     public static final @Color int EMPTY = 0;
@@ -24,8 +27,8 @@ public class Stone {
     private final int col;
     private @Color int value;
 
-    Stone(){
-        this(0,0, EMPTY);
+    Stone() {
+        this(0, 0, EMPTY);
     }
 
     public Stone(int row, int col, @Color int stone) {
@@ -34,20 +37,30 @@ public class Stone {
         this.value = stone;
     }
 
-    public int row(){
+    public int row() {
         return row;
     }
-    public int col(){
+
+    public int col() {
         return col;
     }
-    public void set(@Color int val) {
+
+    void set(@Color int val) {
         this.value = val;
     }
-    public void flip(){
-        switch (value){
-            case Stone.BLACK: value = Stone.WHITE; break;
-            case Stone.WHITE: value = Stone.BLACK; break;
-            default: break;
+
+    void flip() {
+        switch (value) {
+            case Stone.BLACK:
+                value = Stone.WHITE;
+                break;
+            case Stone.WHITE:
+                value = Stone.BLACK;
+                break;
+            case EMPTY:
+                break;
+            default:
+                break;
         }
     }
 
