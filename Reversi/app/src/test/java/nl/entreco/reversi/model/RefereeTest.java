@@ -52,6 +52,7 @@ public class RefereeTest {
     @Before
     public void setUp() throws Exception {
         when(mockGameSettings.getStartIndex()).thenReturn(0);
+        when(mockGameSettings.getUiDelay()).thenReturn(0L);
         when(mockPlayer.getStoneColor()).thenReturn(Stone.BLACK);
         when(mockOpponent.getStoneColor()).thenReturn(Stone.WHITE);
         when(mockBoard.getBoardSize()).thenReturn(BOARD_SIZE);

@@ -24,17 +24,21 @@ public class Referee implements Arbiter, GameTimer.Callback {
     @NonNull private List<Player> playersList = new ArrayList<>();
     @NonNull private final Gson gson;
     @NonNull private final Board board;
+    @NonNull private volatile AtomicInteger currentPlayer;
+    @NonNull private final Handler handler;
 
     @Nullable private GameCallback gameCallback;
-    private volatile AtomicInteger currentPlayer;
+    private final long uiDelay;
 
     public Referee(@NonNull final GameSettings settings, @NonNull final GameTimer timer,
                    @NonNull final Board board) {
+        this.handler = new Handler(Looper.getMainLooper());
         this.settings = settings;
         this.timer = timer;
         this.gson = new GsonBuilder().create();
         this.board = board;
         this.currentPlayer = new AtomicInteger(settings.getStartIndex());
+        this.uiDelay = settings.getUiDelay();
     }
 
     @Override
@@ -172,13 +176,12 @@ public class Referee implements Arbiter, GameTimer.Callback {
     public void notifyNextPlayer(@NonNull Player previousPlayer) {
         int indexOfPreviousPlayer = playersList.indexOf(previousPlayer);
         currentPlayer.set( (indexOfPreviousPlayer + 1) % playersList.size() );
-
-        new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+        handler.postDelayed(new Runnable() {
             @Override
             public void run() {
                 switchPlayers();
             }
-        }, 500);
+        }, uiDelay);
 
     }
 

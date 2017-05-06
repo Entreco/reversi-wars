@@ -4,6 +4,7 @@ import android.os.Handler;
 import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 import nl.entreco.reversi.model.GameCallback;
 import nl.entreco.reversi.model.Move;
@@ -44,6 +45,7 @@ public abstract class BasePlayer implements Player {
     @CallSuper
     @Override
     public void yourTurn(@NonNull String board) {
+        Log.i("BOARD", board);
         ourTurn();
     }
 

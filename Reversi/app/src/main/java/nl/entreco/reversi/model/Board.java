@@ -2,22 +2,23 @@ package nl.entreco.reversi.model;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.VisibleForTesting;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-public class Board extends ArrayList<Stone>{
+public class Board extends ArrayList<Stone> {
 
     private static final long serialVersionUID = -4736231613346515717L;
     private final int boardSize;
 
-    public Board(int size){
+    public Board(int size) {
         boardSize = size;
         init();
     }
 
-    public int getBoardSize(){
+    public int getBoardSize() {
         return boardSize;
     }
 
@@ -41,11 +42,11 @@ public class Board extends ArrayList<Stone>{
         return set(itemPosition, stone);
     }
 
-    public int getItemPosition(final Move move){
+    public int getItemPosition(final Move move) {
         return getItemPosition(move.getRow(), move.getCol());
     }
 
-    public int getItemPosition(final int row, final int col){
+    public int getItemPosition(final int row, final int col) {
         return row * boardSize + col;
     }
 
@@ -75,8 +76,9 @@ public class Board extends ArrayList<Stone>{
         return stones;
     }
 
-    private boolean check(int row, int col, @Stone.Color int stone, @NonNull final List<Stone> positions){
-        if(row < 0 || row >= boardSize || col < 0 || col >= boardSize) {
+    private boolean check(int row, int col, @Stone.Color int stone,
+                          @NonNull final List<Stone> positions) {
+        if (row < 0 || row >= boardSize || col < 0 || col >= boardSize) {
             positions.clear();
             return true;
         }
@@ -86,7 +88,7 @@ public class Board extends ArrayList<Stone>{
         if (other.color() == Stone.EMPTY) {
             positions.clear();
             return true;
-        } else  if(other.color() == stone){
+        } else if (other.color() == stone) {
             return true;
         } else {
             positions.add(other);
@@ -97,7 +99,7 @@ public class Board extends ArrayList<Stone>{
     private List<Stone> flipLeft(Move move, @Stone.Color int stone) {
         final List<Stone> positions = new ArrayList<>();
         for (int x = move.getCol() - 1; x >= -1; x--) {
-            if(check(move.getRow(), x, stone, positions)){
+            if (check(move.getRow(), x, stone, positions)) {
                 break;
             }
         }
@@ -109,7 +111,7 @@ public class Board extends ArrayList<Stone>{
         final List<Stone> positions = new ArrayList<>();
 
         for (int x = move.getCol() + 1; x <= boardSize; x++) {
-            if(check(move.getRow(), x, stone, positions)){
+            if (check(move.getRow(), x, stone, positions)) {
                 break;
             }
         }
@@ -121,7 +123,7 @@ public class Board extends ArrayList<Stone>{
         final List<Stone> positions = new ArrayList<>();
 
         for (int y = move.getRow() - 1; y >= -1; y--) {
-            if(check(y, move.getCol(), stone, positions)){
+            if (check(y, move.getCol(), stone, positions)) {
                 break;
             }
         }
@@ -133,7 +135,7 @@ public class Board extends ArrayList<Stone>{
         final List<Stone> positions = new ArrayList<>();
 
         for (int y = move.getRow() + 1; y <= boardSize; y++) {
-            if(check(y, move.getCol(), stone, positions)){
+            if (check(y, move.getCol(), stone, positions)) {
                 break;
             }
         }
@@ -145,7 +147,7 @@ public class Board extends ArrayList<Stone>{
         final List<Stone> positions = new ArrayList<>();
 
         for (int offset = 1; offset <= boardSize; offset++) {
-            if(check(move.getRow() - offset, move.getCol() - offset, stone, positions)){
+            if (check(move.getRow() - offset, move.getCol() - offset, stone, positions)) {
                 break;
             }
         }
@@ -157,7 +159,7 @@ public class Board extends ArrayList<Stone>{
         final List<Stone> positions = new ArrayList<>();
 
         for (int offset = 1; offset <= boardSize; offset++) {
-            if(check(move.getRow() - offset, move.getCol() + offset, stone, positions)){
+            if (check(move.getRow() - offset, move.getCol() + offset, stone, positions)) {
                 break;
             }
         }
@@ -169,7 +171,7 @@ public class Board extends ArrayList<Stone>{
         final List<Stone> positions = new ArrayList<>();
 
         for (int offset = 1; offset <= boardSize; offset++) {
-            if(check(move.getRow() + offset, move.getCol() + offset, stone, positions)){
+            if (check(move.getRow() + offset, move.getCol() + offset, stone, positions)) {
                 break;
             }
         }
@@ -181,7 +183,7 @@ public class Board extends ArrayList<Stone>{
         final List<Stone> positions = new ArrayList<>();
 
         for (int offset = 1; offset <= boardSize; offset++) {
-            if(check(move.getRow() + offset, move.getCol() - offset, stone, positions)){
+            if (check(move.getRow() + offset, move.getCol() - offset, stone, positions)) {
                 break;
             }
         }
@@ -250,8 +252,8 @@ public class Board extends ArrayList<Stone>{
     }
 
     private void init() {
-        for(int row=0 ; row < boardSize ; row++){
-            for(int col=0 ; col < boardSize ; col++){
+        for (int row = 0; row < boardSize; row++) {
+            for (int col = 0; col < boardSize; col++) {
                 add(new Move(row, col), Stone.EMPTY);
             }
         }
@@ -262,18 +264,18 @@ public class Board extends ArrayList<Stone>{
 
         // 1) Find Empty Stones
         final Iterator<Stone> iterator = copy.iterator();
-        while (iterator.hasNext()){
-            if(iterator.next().color() != Stone.EMPTY){
+        while (iterator.hasNext()) {
+            if (iterator.next().color() != Stone.EMPTY) {
                 iterator.remove();
             }
         }
 
         // 2) Generate Moves for Empty Stones
-        for(final Stone empty : copy){
+        for (final Stone empty : copy) {
             final Move move = new Move(empty.row(), empty.col());
             final Board copyOfCurrentBoard = clone();
             // 3) Check if the move actually flips some stones;
-            if(copyOfCurrentBoard.apply(move, stone).size() > 0) {
+            if (copyOfCurrentBoard.apply(move, stone).size() > 0) {
                 return true;
             }
         }
@@ -287,8 +289,8 @@ public class Board extends ArrayList<Stone>{
 
         // 1) Find Empty Stones
         final Iterator<Stone> iterator = copy.iterator();
-        while (iterator.hasNext()){
-            if(iterator.next().color() != Stone.EMPTY){
+        while (iterator.hasNext()) {
+            if (iterator.next().color() != Stone.EMPTY) {
                 iterator.remove();
             }
         }
@@ -296,11 +298,11 @@ public class Board extends ArrayList<Stone>{
 
         // 2) Generate Moves for Empty Stones
         final List<Move> possibleMoves = new ArrayList<>();
-        for(final Stone empty : copy){
+        for (final Stone empty : copy) {
             final Move move = new Move(empty.row(), empty.col());
             final Board copyOfCurrentBoard = clone();
             // 3) Check if the move actually flips some stones;
-            if(copyOfCurrentBoard.apply(move, stone).size() > 0) {
+            if (copyOfCurrentBoard.apply(move, stone).size() > 0) {
                 possibleMoves.add(move);
             }
         }
@@ -313,7 +315,7 @@ public class Board extends ArrayList<Stone>{
         super.clone();
         Board clone = new Board(boardSize);
         clone.clear();
-        for (final Stone item : this){
+        for (final Stone item : this) {
             clone.add(item.clone());
         }
         return clone;
@@ -322,5 +324,15 @@ public class Board extends ArrayList<Stone>{
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     List<Stone> getStones() {
         return this;
+    }
+
+    public void setupWithData(int[][] board) {
+        for (int row = 0; row < board.length; row++) {
+            for (int col = 0; col < board[row].length; col++) {
+                int color = board[row][col];
+                set(new Move(row, col), color);
+            }
+        }
+        Log.i("BOARD", toString());
     }
 }
