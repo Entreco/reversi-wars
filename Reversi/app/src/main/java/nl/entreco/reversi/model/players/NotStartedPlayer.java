@@ -14,6 +14,11 @@ public class NotStartedPlayer implements Player {
     }
 
     @Override
+    public void onJoinedGame(@NonNull String gameUuid) {
+
+    }
+
+    @Override
     public void yourTurn(@NonNull String board) {
 
     }

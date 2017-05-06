@@ -9,6 +9,8 @@ public interface Player {
     @NonNull
     String getName();
 
+    void onJoinedGame(@NonNull final String gameUuid);
+
     void yourTurn(@NonNull final String board);
 
     void onMoveRejected(@NonNull final String board);

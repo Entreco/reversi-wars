@@ -27,6 +27,8 @@ public class FetchPlayersUsecase {
         foundPlayer(new SpiralPlayer());
         foundPlayer(new SpiralPlayer());
         foundPlayer(new BeatMePlayer());
+
+        // Fetch Remotes...
     }
 
     private void foundPlayer(@NonNull final Player player) {

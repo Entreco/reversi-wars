@@ -1,4 +1,4 @@
-package nl.entreco.reversi;
+package nl.entreco.reversi.ui;
 
 import android.content.Context;
 import android.graphics.Canvas;

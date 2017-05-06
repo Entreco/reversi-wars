@@ -48,17 +48,41 @@
             <View android:layout_width="match_parent" android:layout_height="1dp"
                   android:layout_marginTop="8dp"
                   android:background="@drawable/hline"/>
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:padding="8dp"
-                android:paddingStart="16dp"
-                android:paddingEnd="16dp"
-                android:background="@color/stone_normal"
-                reversi:player1="@{viewModel.player1}"
-                reversi:player2="@{viewModel.player2}"
-                tools:text="@string/select_player_1"/>
+            <LinearLayout android:layout_width="match_parent"
+                          android:layout_height="wrap_content"
+                          android:background="@color/stone_normal"
+                          android:orientation="horizontal"
+                          android:paddingStart="8dp"
+                          android:paddingEnd="8dp"
+                          reversi:player1="@{viewModel.player1}"
+                          reversi:player2="@{viewModel.player2}">
+
+                <ImageView
+                    android:id="@+id/stone_start"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:padding="4dp"
+                    android:src="@drawable/ic_stone_white"/>
+                <TextView
+                    android:id="@+id/stone_text"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/colorAccent"
+                    android:gravity="center"
+                    android:padding="8dp"
+                    android:paddingEnd="16dp"
+                    android:paddingStart="16dp"
+                    tools:text="@string/select_player_1"/>
+
+                <ImageView
+                    android:id="@+id/stone_end"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:padding="4dp"
+                    android:src="@drawable/ic_stone_black"/>
+
+            </LinearLayout>
             <View android:layout_width="match_parent" android:layout_height="1dp"
                   android:background="@drawable/hline"/>
 

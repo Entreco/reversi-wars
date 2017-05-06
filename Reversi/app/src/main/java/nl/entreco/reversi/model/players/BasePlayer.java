@@ -33,6 +33,11 @@ public abstract class BasePlayer implements Player {
     }
 
     @Override
+    public void onJoinedGame(@NonNull String gameUuid) {
+        // Means a new game was started
+    }
+
+    @Override
     public final int getStoneColor() {
         return stoneColor;
     }

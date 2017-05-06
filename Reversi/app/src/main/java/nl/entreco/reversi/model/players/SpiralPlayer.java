@@ -19,15 +19,26 @@ import nl.entreco.reversi.model.Stone;
 
 public class SpiralPlayer extends BasePlayer {
 
-    private final List<Point> points;
+    private final List<Point> points = new ArrayList<>();
     private final List<Point> alreadyTried = new ArrayList<>();
     private final List<Point> movesDone = new ArrayList<>();
     private final Gson gson;
 
     public SpiralPlayer() {
         gson = new GsonBuilder().create();
-        points = new Spiral(8, 8).spiral();
+        initSpiral();
+    }
+
+    private void initSpiral() {
+        points.clear();
+        points.addAll(new Spiral(8, 8).spiral());
         Collections.reverse(points);
+    }
+
+    @Override
+    public void onJoinedGame(@NonNull String gameUuid) {
+        super.onJoinedGame(gameUuid);
+        initSpiral();
     }
 
     @Override

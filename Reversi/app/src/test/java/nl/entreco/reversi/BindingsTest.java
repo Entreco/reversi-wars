@@ -10,6 +10,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import nl.entreco.reversi.model.Player;
 import nl.entreco.reversi.model.Stone;
+import nl.entreco.reversi.ui.Bindings;
 
 import static org.mockito.ArgumentMatchers.anyFloat;
 import static org.mockito.Mockito.verify;

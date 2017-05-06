@@ -55,7 +55,7 @@
             </LinearLayout>
 
 
-            <nl.entreco.reversi.CountDownActionButton
+            <nl.entreco.reversi.ui.CountDownActionButton
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" android:layout_gravity="center"
                 android:onClick="@{() -> game.startGame()}"

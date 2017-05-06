@@ -7,16 +7,18 @@ import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
 import android.support.transition.TransitionManager;
+import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import nl.entreco.reversi.model.Player;
 import nl.entreco.reversi.model.Stone;
+import nl.entreco.reversi.ui.PulseDrawable;
 
 public class AnimationUtils {
     public static void reject(@NonNull View view, @Stone.Color int stone,
-                               @NonNull Player rejected) {
+                              @NonNull Player rejected) {
         if (stone == rejected.getStoneColor()) {
 
             float rot = 5f;
@@ -49,7 +51,7 @@ public class AnimationUtils {
     }
 
     public static void current(@NonNull View view, @Stone.Color int stone,
-                                @NonNull Player player) {
+                               @NonNull Player player) {
         if (stone == player.getStoneColor()) {
             view.animate().scaleX(1F).scaleY(1F).alpha(1F).start();
         } else {
@@ -57,19 +59,28 @@ public class AnimationUtils {
         }
     }
 
-    public static void crossFade(@NonNull final TextView view, @StringRes int text, @DrawableRes int drawableRight) {
+    public static void crossFade(@NonNull final TextView view, @StringRes int text) {
         TransitionManager.beginDelayedTransition((ViewGroup) view.getParent());
-        if(text > 0) {
+        if (text > 0) {
             view.setText(text);
         } else {
             view.setText("");
         }
+    }
 
-        if(drawableRight > 0) {
-            view.setCompoundDrawablesWithIntrinsicBounds(0, 0, drawableRight, 0);
-        } else {
-            view.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
-        }
+    private static int dOrNull(@DrawableRes int drawable) {
+        return drawable > 0 ? drawable : 0;
+    }
+
+    public static void pulse(@NonNull final View container, boolean start) {
+
+        final View hide = container.findViewById(start ? R.id.stone_end : R.id.stone_start);
+        final View pulse = container.findViewById(start ? R.id.stone_start : R.id.stone_end);
+
+        hide.animate().scaleX(0F).scaleY(0F).alpha(0F).start();
+        pulse.animate().scaleX(1F).scaleY(1F).alpha(1F).start();
+        int accent = ContextCompat.getColor(container.getContext(), R.color.colorAccent);
+        pulse.setBackground(new PulseDrawable(accent));
 
     }
 }
