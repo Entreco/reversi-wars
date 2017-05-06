@@ -30,9 +30,9 @@ public class Referee implements Arbiter, GameTimer.Callback {
     @Nullable private GameCallback gameCallback;
     private final long uiDelay;
 
-    public Referee(@NonNull final GameSettings settings, @NonNull final GameTimer timer,
+    public Referee(@NonNull final Handler handler, @NonNull final GameSettings settings, @NonNull final GameTimer timer,
                    @NonNull final Board board) {
-        this.handler = new Handler(Looper.getMainLooper());
+        this.handler = handler;
         this.settings = settings;
         this.timer = timer;
         this.gson = new GsonBuilder().create();

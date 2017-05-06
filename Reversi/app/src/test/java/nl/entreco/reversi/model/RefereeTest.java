@@ -1,5 +1,8 @@
 package nl.entreco.reversi.model;
 
+import android.os.Handler;
+import android.support.annotation.NonNull;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -13,8 +16,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.TimerTask;
 
-import nl.entreco.reversi.model.players.NotStartedPlayer;
-
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -22,6 +23,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -38,6 +40,7 @@ public class RefereeTest {
 
     private Referee subject;
 
+    @Mock private Handler mockHandler;
     @Mock private GameSettings mockGameSettings;
     @Mock private GameTimer mockTimer;
     @Mock private Board mockBoard;
@@ -48,6 +51,7 @@ public class RefereeTest {
     @Mock private GameCallback mockGameCallback;
 
     @Captor private ArgumentCaptor<TimerTask> timerTask;
+    @Captor private ArgumentCaptor<Runnable> runnableCaptor;
 
     @Before
     public void setUp() throws Exception {
@@ -57,7 +61,7 @@ public class RefereeTest {
         when(mockOpponent.getStoneColor()).thenReturn(Stone.WHITE);
         when(mockBoard.getBoardSize()).thenReturn(BOARD_SIZE);
 
-        subject = new Referee(mockGameSettings, mockTimer, mockBoard);
+        subject = new Referee(mockHandler, mockGameSettings, mockTimer, mockBoard);
     }
 
     @Test
@@ -149,7 +153,6 @@ public class RefereeTest {
     @Test
     public void itShouldReturnFirstPlayerWhenStartingNewMatch() throws Exception {
         simulateMatchStarted(mockPlayer, mock(Player.class));
-//        assertEquals(mockPlayer, subject.getCurrentPlayer());
     }
 
     @Test(expected = IllegalStateException.class)
@@ -205,6 +208,7 @@ public class RefereeTest {
         simulateMatchStarted(mockPlayer, mockOpponent);
 
         simulateTimedOut(mockPlayer);
+
         verify(mockOpponent).yourTurn(anyString());
     }
 
@@ -326,6 +330,12 @@ public class RefereeTest {
 
     private void simulateTimedOut(Player player) {
         subject.onTimedOut(player);
+        simulateRun();
+    }
+
+    private void simulateRun() {
+        verify(mockHandler).postDelayed(runnableCaptor.capture(), anyLong());
+        runnableCaptor.getValue().run();
     }
 
     private void simulateGameFinished(Player... players) {
@@ -338,5 +348,6 @@ public class RefereeTest {
         }
 
         subject.notifyNextPlayer(players[0]);
+        simulateRun();
     }
 }
