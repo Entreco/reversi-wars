@@ -172,7 +172,14 @@ public class Referee implements Arbiter, GameTimer.Callback {
     public void notifyNextPlayer(@NonNull Player previousPlayer) {
         int indexOfPreviousPlayer = playersList.indexOf(previousPlayer);
         currentPlayer.set( (indexOfPreviousPlayer + 1) % playersList.size() );
-        switchPlayers();
+
+        new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                switchPlayers();
+            }
+        }, 500);
+
     }
 
     @NonNull

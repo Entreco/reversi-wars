@@ -2,6 +2,7 @@ package nl.entreco.reversi.game;
 
 import android.databinding.ObservableField;
 import android.databinding.ObservableInt;
+import android.databinding.ObservableLong;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 
@@ -22,6 +23,7 @@ public class Game implements GameCallback {
     @NonNull public final ObservableField<Player> winner;
     @NonNull public final ObservableField<Player> current;
     @NonNull public final ObservableField<Player> rejected;
+    @NonNull public final ObservableLong timeout;
 
     @NonNull public final ObservableField<Player> player1;
     @NonNull public final ObservableField<Player> player2;
@@ -42,6 +44,7 @@ public class Game implements GameCallback {
         this.winner = new ObservableField<>();
         this.current = new ObservableField<>();
         this.rejected = new ObservableField<>();
+        this.timeout = new ObservableLong(4000L);
     }
 
     public void startGame() {

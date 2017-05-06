@@ -55,13 +55,15 @@
             </LinearLayout>
 
 
-            <android.support.design.widget.FloatingActionButton
+            <nl.entreco.reversi.CountDownActionButton
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" android:layout_gravity="center"
                 android:onClick="@{() -> game.startGame()}"
                 android:src="@{game.player1 != null ? @drawable/ic_refresh : @drawable/ic_play}"
                 android:tint="@color/stone_normal"
                 app:fabSize="normal"
+                reversi:timePlayer="@{game.current}"
+                reversi:timeOut="@{game.timeout}"
                 tools:src="@drawable/ic_play"
                 tools:text="@string/start"/>
 
