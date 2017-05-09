@@ -7,6 +7,7 @@
 
     <data>
         <import alias="View" type="android.view.View"/>
+        <import alias="Uuid" type="java.util.UUID"/>
         <variable name="game" type="nl.entreco.reversi.game.Game"/>
     </data>
 
@@ -58,7 +59,7 @@
             <nl.entreco.reversi.ui.CountDownActionButton
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" android:layout_gravity="center"
-                android:onClick="@{() -> game.startGame()}"
+                android:onClick="@{() -> game.startGame(Uuid.randomUUID().toString())}"
                 android:src="@{game.player1 != null ? @drawable/ic_refresh : @drawable/ic_play}"
                 android:tint="@color/stone_normal"
                 app:fabSize="normal"

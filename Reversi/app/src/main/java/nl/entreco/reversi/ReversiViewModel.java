@@ -67,12 +67,15 @@ public class ReversiViewModel implements FetchPlayersUsecase.Callback, PlayerSel
     }
 
     private void startNewGame() {
+
+        final String uuid = new MatchReference().start(player1.get(), player2.get());
+
         newGame.setWhitePlayer(player1.get());
         newGame.setBlackPlayer(player2.get());
 
         // Start
         game.set(newGame);
-        newGame.startGame();
+        newGame.startGame(uuid);
         fetchPlayersUsecase.unregisterCallback();
     }
 }

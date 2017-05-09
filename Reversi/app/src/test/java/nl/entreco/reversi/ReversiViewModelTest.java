@@ -6,6 +6,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.util.UUID;
+
 import nl.entreco.reversi.data.FetchPlayersUsecase;
 import nl.entreco.reversi.game.Game;
 import nl.entreco.reversi.model.Player;
@@ -18,6 +20,8 @@ import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ReversiViewModelTest {
+
+    private static final String GAME_UID = UUID.randomUUID().toString();
 
     @InjectMocks ReversiViewModel subject;
     @Mock Game mockGame;
@@ -75,7 +79,7 @@ public class ReversiViewModelTest {
 
         verify(mockGame).setWhitePlayer(mockPlayer1);
         verify(mockGame).setBlackPlayer(mockPlayer2);
-        verify(mockGame).startGame();
+        verify(mockGame).startGame(GAME_UID);
         verify(mockFetchPlayersUsecase).unregisterCallback();
     }
 

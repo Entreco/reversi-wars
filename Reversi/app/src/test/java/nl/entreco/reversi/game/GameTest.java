@@ -8,6 +8,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 
 import nl.entreco.reversi.model.Arbiter;
 import nl.entreco.reversi.model.Move;
@@ -22,6 +23,8 @@ import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class GameTest {
+
+    private static final String GAME_UID = UUID.randomUUID().toString();
 
     Game subject;
 
@@ -41,7 +44,7 @@ public class GameTest {
     public void itShouldSetGameCallbackOnPlayersOnStart() throws Exception {
         subject.setWhitePlayer(mockP1);
         subject.setBlackPlayer(mockP2);
-        subject.startGame();
+        subject.startGame(GAME_UID);
 
         verify(mockP1).setCallback(subject);
         verify(mockP2).setCallback(subject);
@@ -49,14 +52,14 @@ public class GameTest {
 
     @Test
     public void itShouldRestartArbiterOnStart() throws Exception {
-        subject.startGame();
+        subject.startGame(GAME_UID);
 
         verify(mockArbiter).start(subject);
     }
 
     @Test
     public void itShouldNotifyAdapterChangedOnStart() throws Exception {
-        subject.startGame();
+        subject.startGame(GAME_UID);
 
         verify(mockAdapter).start();
     }

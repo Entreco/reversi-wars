@@ -7,7 +7,6 @@ import android.os.Handler;
 import android.support.annotation.NonNull;
 
 import java.util.List;
-import java.util.UUID;
 
 import nl.entreco.reversi.model.Arbiter;
 import nl.entreco.reversi.model.GameCallback;
@@ -31,11 +30,8 @@ public class Game implements GameCallback {
 
     @NonNull private final BoardAdapter adapter;
     @NonNull private final Arbiter arbiter;
-    @NonNull private String uuid;
 
     public Game(@NonNull final BoardAdapter adapter, @NonNull final Arbiter arbiter) {
-
-        this.uuid = UUID.randomUUID().toString();
 
         this.adapter = adapter;
         this.arbiter = arbiter;
@@ -51,12 +47,11 @@ public class Game implements GameCallback {
         this.timeout = new ObservableLong(4000L);
     }
 
-    public void startGame() {
+    public void startGame(@NonNull final String uuid) {
 
         addDefaultPlayersIfEmpty();
         this.winner.set(null);
 
-        this.uuid = UUID.randomUUID().toString();
         this.player1.get().onJoinedGame(uuid);
         this.player2.get().onJoinedGame(uuid);
 
