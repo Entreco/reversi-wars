@@ -3,23 +3,23 @@ package nl.entreco.reversibot;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
-public class MatchViewModel implements FetchMatchesUsecase.Callback {
-    private final FetchMatchesUsecase fetchMatchesUsecase;
+public class MatchViewModel implements RegisterPlayerUsecase.Callback {
+    private final RegisterPlayerUsecase registerPlayerUsecase;
 
-    MatchViewModel(FetchMatchesUsecase fetchMatchesUsecase) {
-        this.fetchMatchesUsecase = fetchMatchesUsecase;
+    MatchViewModel(RegisterPlayerUsecase registerPlayerUsecase) {
+        this.registerPlayerUsecase = registerPlayerUsecase;
     }
 
     void registerForMatches() {
-        this.fetchMatchesUsecase.register(this);
+        this.registerPlayerUsecase.register(this);
     }
 
     void unregisterForMatches() {
-        this.fetchMatchesUsecase.unregister();
+        this.registerPlayerUsecase.unregister();
     }
 
     @Override
-    public void onMatchAdded(@NonNull String matchId) {
-        Log.i("MATCHES", "onMatchAdded:" + matchId);
+    public void onPlayerAdded(@NonNull String matchId) {
+        Log.i("MATCHES", "onPlayerAdded:" + matchId);
     }
 }

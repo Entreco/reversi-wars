@@ -20,7 +20,7 @@ public class MatchActivity extends AppCompatActivity {
         final ActivityMatchBinding binding =
                 DataBindingUtil.setContentView(this, R.layout.activity_match);
 
-        viewModel = new MatchViewModel(new FetchMatchesUsecase());
+        viewModel = new MatchViewModel(new RegisterPlayerUsecase());
         binding.setViewModel(viewModel);
 
         initToolbar(binding);

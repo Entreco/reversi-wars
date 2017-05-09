@@ -35,7 +35,6 @@ public class ReversiViewModelTest {
         subject.fetchPlayers();
 
         verify(mockFetchPlayersUsecase).registerCallback(subject);
-        verify(mockFetchPlayersUsecase).fetch();
     }
 
     @Test

@@ -10,6 +10,7 @@ import java.util.List;
 
 import nl.entreco.reversi.model.Arbiter;
 import nl.entreco.reversi.model.GameCallback;
+import nl.entreco.reversi.model.GameSettings;
 import nl.entreco.reversi.model.Move;
 import nl.entreco.reversi.model.Player;
 import nl.entreco.reversi.model.Stone;
@@ -44,7 +45,7 @@ public class Game implements GameCallback {
         this.winner = new ObservableField<>();
         this.current = new ObservableField<>();
         this.rejected = new ObservableField<>();
-        this.timeout = new ObservableLong(4000L);
+        this.timeout = new ObservableLong(GameSettings.timeout);
     }
 
     public void startGame(@NonNull final String uuid) {

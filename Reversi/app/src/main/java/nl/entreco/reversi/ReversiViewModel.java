@@ -5,12 +5,18 @@ import android.databinding.ObservableField;
 import android.databinding.ObservableList;
 import android.support.annotation.NonNull;
 
+import java.util.function.Predicate;
+
 import me.tatarka.bindingcollectionadapter2.ItemBinding;
+import nl.entreco.reversi.api.MatchData;
+import nl.entreco.reversi.data.CreateMatchUsecase;
 import nl.entreco.reversi.data.FetchPlayersUsecase;
+import nl.entreco.reversi.data.RemoteUsecase;
 import nl.entreco.reversi.game.Game;
 import nl.entreco.reversi.model.Player;
 
-public class ReversiViewModel implements FetchPlayersUsecase.Callback, PlayerSelectedListener {
+public class ReversiViewModel implements FetchPlayersUsecase.Callback, PlayerSelectedListener,
+        CreateMatchUsecase.Callback {
 
     public final ObservableList<Player> players;
     public final ItemBinding<Player> playersBinding =
@@ -19,20 +25,21 @@ public class ReversiViewModel implements FetchPlayersUsecase.Callback, PlayerSel
     public final ObservableField<Game> game;
     public final ObservableField<Player> player1;
     public final ObservableField<Player> player2;
-    private final FetchPlayersUsecase fetchPlayersUsecase;
 
     @NonNull private final Game newGame;
+    @NonNull private final RemoteUsecase remoteUsecase;
 
-    ReversiViewModel(@NonNull final Game game, @NonNull final FetchPlayersUsecase fetchPlayersUsecase) {
+    ReversiViewModel(@NonNull final Game game,
+                     @NonNull final RemoteUsecase remoteUsecase) {
 
         this.newGame = game;
+        this.remoteUsecase = remoteUsecase;
         this.game = new ObservableField<>();
         this.player1 = new ObservableField<>();
         this.player2 = new ObservableField<>();
         this.players = new ObservableArrayList<>();
 
         this.playersBinding.bindExtra(BR.listener, this);
-        this.fetchPlayersUsecase = fetchPlayersUsecase;
     }
 
     void fetchPlayers() {
@@ -42,8 +49,18 @@ public class ReversiViewModel implements FetchPlayersUsecase.Callback, PlayerSel
         newGame.clear();
         players.clear();
 
-        fetchPlayersUsecase.registerCallback(this);
-        fetchPlayersUsecase.fetch();
+        remoteUsecase.fetchPlayers(this);
+    }
+
+    @SuppressWarnings("Since15")
+    @Override
+    public void onPlayerRemoved(@NonNull final String name) {
+        players.removeIf(new Predicate<Player>() {
+            @Override
+            public boolean test(Player player) {
+                return name.equals(player.getName());
+            }
+        });
     }
 
     @Override
@@ -68,14 +85,17 @@ public class ReversiViewModel implements FetchPlayersUsecase.Callback, PlayerSel
 
     private void startNewGame() {
 
-        final String uuid = new MatchReference().start(player1.get(), player2.get());
+        remoteUsecase.createMatch(this, player1.get(), player2.get());
+    }
 
+    @Override
+    public void onMatchCreated(@NonNull MatchData matchData,
+                               @NonNull String matchUuid) {
         newGame.setWhitePlayer(player1.get());
         newGame.setBlackPlayer(player2.get());
 
         // Start
         game.set(newGame);
-        newGame.startGame(uuid);
-        fetchPlayersUsecase.unregisterCallback();
+        newGame.startGame(matchUuid);
     }
 }

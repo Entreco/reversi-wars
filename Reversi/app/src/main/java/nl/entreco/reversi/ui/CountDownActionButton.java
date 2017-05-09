@@ -10,6 +10,8 @@ import android.support.design.widget.FloatingActionButton;
 import android.util.AttributeSet;
 import android.util.Log;
 
+import nl.entreco.reversi.model.GameSettings;
+
 public class CountDownActionButton extends FloatingActionButton {
 
     private static final float START_ANGLE = -90F;
@@ -41,7 +43,7 @@ public class CountDownActionButton extends FloatingActionButton {
     }
 
     private void initTimer(){
-        final long countDown = 4000;
+        final long countDown = GameSettings.timeout;
         timer = new CountDownTimer(countDown, 1000 / 60) {
             @Override
             public void onTick(long millisUntilFinished) {

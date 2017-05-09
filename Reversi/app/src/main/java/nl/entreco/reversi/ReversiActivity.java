@@ -9,10 +9,13 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.view.View;
 
+import com.google.firebase.database.FirebaseDatabase;
+
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
 import nl.entreco.reversi.data.FetchPlayersUsecase;
+import nl.entreco.reversi.data.RemoteUsecase;
 import nl.entreco.reversi.databinding.ActivityReversiBinding;
 import nl.entreco.reversi.game.BoardAdapter;
 import nl.entreco.reversi.game.Game;
@@ -44,7 +47,7 @@ public class ReversiActivity extends AppCompatActivity {
         final BoardAdapter adapter = new BoardAdapter(ref);
         final Game game = new Game(adapter, ref);
 
-        final ReversiViewModel viewModel = new ReversiViewModel(game, new FetchPlayersUsecase());
+        final ReversiViewModel viewModel = new ReversiViewModel(game, new RemoteUsecase(FirebaseDatabase.getInstance()));
         final BottomSheetBehavior<? extends View> behavior =
                 BottomSheetBehavior.from(binding.bottomSheet);
         behavior.setBottomSheetCallback(new ReloadCallback(viewModel));

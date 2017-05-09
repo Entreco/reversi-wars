@@ -6,23 +6,26 @@ import android.support.annotation.Nullable;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
-class FetchMatchesUsecase {
+class RegisterPlayerUsecase {
 
     @Nullable private Callback callback;
 
     interface Callback{
-        void onMatchAdded(@NonNull final String matchId);
+        void onPlayerAdded(@NonNull final String matchId);
     }
 
-    private final DatabaseReference matches;
+    private final DatabaseReference players;
 
-    FetchMatchesUsecase() {
-        matches = FirebaseDatabase.getInstance().getReference("players");
+    RegisterPlayerUsecase() {
+        players = FirebaseDatabase.getInstance().getReference("players");
     }
 
     void register(@NonNull final Callback callback){
         this.callback = callback;
-        this.matches.push().setValue(new BeatMeBot());
+        final DatabaseReference push = this.players.push();
+        final String playerUid = push.getKey();
+        push.setValue(new BeatMeBot(players, playerUid));
+        this.callback.onPlayerAdded(playerUid);
     }
     void unregister(){
         this.callback = null;
