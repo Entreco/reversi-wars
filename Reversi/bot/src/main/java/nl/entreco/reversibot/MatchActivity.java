@@ -1,13 +1,11 @@
 package nl.entreco.reversibot;
 
-import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
-import nl.entreco.reversi.ReversiActivity;
 import nl.entreco.reversibot.databinding.ActivityMatchBinding;
 
 public class MatchActivity extends AppCompatActivity {
@@ -43,7 +41,7 @@ public class MatchActivity extends AppCompatActivity {
         binding.fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(MatchActivity.this, ReversiActivity.class));
+//                startActivity(new Intent(MatchActivity.this, ReversiActivity.class));
             }
         });
     }

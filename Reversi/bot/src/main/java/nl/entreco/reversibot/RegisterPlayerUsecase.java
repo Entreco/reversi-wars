@@ -24,7 +24,7 @@ class RegisterPlayerUsecase {
         this.callback = callback;
         final DatabaseReference push = this.players.push();
         final String playerUid = push.getKey();
-        push.setValue(new BeatMeBot(players, playerUid));
+        push.setValue(new FirebaseBot(players, playerUid));
         this.callback.onPlayerAdded(playerUid);
     }
     void unregister(){

@@ -8,7 +8,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.IgnoreExtraProperties;
 
 @IgnoreExtraProperties
-class BeatMeBot implements MatchListener.Callback, TurnListener.Callback, RejectListener.Callback {
+class FirebaseBot implements MatchListener.Callback, TurnListener.Callback, RejectListener.Callback {
 
     public String name = "Remco";
 
@@ -18,7 +18,7 @@ class BeatMeBot implements MatchListener.Callback, TurnListener.Callback, Reject
 
     @Nullable private DatabaseReference moveReference;
 
-    BeatMeBot(DatabaseReference playerReference, String playerUid) {
+    FirebaseBot(DatabaseReference playerReference, String playerUid) {
         matchReference = playerReference.child(playerUid).child("matches");
         matchReference.addChildEventListener(new MatchListener(this));
         turnListener = new TurnListener(this);
@@ -37,12 +37,14 @@ class BeatMeBot implements MatchListener.Callback, TurnListener.Callback, Reject
 
     @Override
     public void onYourTurn(@NonNull String board) {
-        moveReference.child("try").setValue("[0,2]");
+        int row = (int) (Math.random() * 8);
+        int col = (int) (Math.random() * 8);
+        moveReference.child("try").setValue(String.format("[%s,%s]", row, col));
     }
 
 
     @Override
     public void onMoveRejected(@NonNull String move) {
-        moveReference.child("try").setValue("[5,4]");
+        onYourTurn("");
     }
 }
