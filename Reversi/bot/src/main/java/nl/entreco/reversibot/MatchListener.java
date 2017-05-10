@@ -1,45 +1,47 @@
 package nl.entreco.reversibot;
 
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 
-public class MatchListener implements ChildEventListener {
+class MatchListener implements ChildEventListener {
     private final Callback callback;
 
-    public interface Callback{
+    interface Callback{
         void onJoinedMatch(@NonNull final String uuid);
     }
 
-    public MatchListener(Callback callback) {
+    MatchListener(Callback callback) {
         this.callback = callback;
     }
 
     @Override
-    public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+    public final void onChildAdded(DataSnapshot dataSnapshot, String s) {
         final String matchUuid = dataSnapshot.getKey();
+        Log.i("FirebaseBot", "MatchListener onChildAdded:" + matchUuid);
         this.callback.onJoinedMatch(matchUuid);
     }
 
     @Override
-    public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-
+    public final void onChildChanged(DataSnapshot dataSnapshot, String s) {
+        Log.i("FirebaseBot", "MatchListener onChildChanged:" + dataSnapshot);
     }
 
     @Override
-    public void onChildRemoved(DataSnapshot dataSnapshot) {
-
+    public final void onChildRemoved(DataSnapshot dataSnapshot) {
+        Log.i("FirebaseBot", "MatchListener onChildRemoved:" + dataSnapshot);
     }
 
     @Override
-    public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-
+    public final void onChildMoved(DataSnapshot dataSnapshot, String s) {
+        Log.i("FirebaseBot", "MatchListener onChildMoved:" + dataSnapshot);
     }
 
     @Override
-    public void onCancelled(DatabaseError databaseError) {
-
+    public final void onCancelled(DatabaseError databaseError) {
+        Log.i("FirebaseBot", "MatchListener onCancelled:" + databaseError);
     }
 }

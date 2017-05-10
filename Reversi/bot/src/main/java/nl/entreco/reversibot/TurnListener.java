@@ -1,6 +1,7 @@
 package nl.entreco.reversibot;
 
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -9,22 +10,23 @@ import com.google.firebase.database.ValueEventListener;
 class TurnListener implements ValueEventListener {
     private final Callback callback;
 
-    public interface Callback {
+    interface Callback {
         void onYourTurn(@NonNull final String board);
     }
-    public TurnListener(Callback callback) {
+    TurnListener(Callback callback) {
         this.callback = callback;
     }
 
     @Override
-    public void onDataChange(DataSnapshot dataSnapshot) {
+    public final void onDataChange(DataSnapshot dataSnapshot) {
+        Log.i("FirebaseBot", "TurnListener onDataChange:" + dataSnapshot.getValue());
         if(dataSnapshot.getValue() != null) {
             callback.onYourTurn(dataSnapshot.getValue().toString());
         }
     }
 
     @Override
-    public void onCancelled(DatabaseError databaseError) {
-
+    public final void onCancelled(DatabaseError databaseError) {
+        Log.i("FirebaseBot", "TurnListener onCancelled:" + databaseError);
     }
 }

@@ -8,43 +8,53 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.IgnoreExtraProperties;
 
 @IgnoreExtraProperties
-class FirebaseBot implements MatchListener.Callback, TurnListener.Callback, RejectListener.Callback {
+public abstract class FirebaseBot implements MatchListener.Callback, TurnListener.Callback, RejectListener.Callback {
 
-    public String name = "Remco";
+    @Nullable public String name;
 
-    @NonNull private final TurnListener turnListener;
-    @NonNull private final RejectListener rejectListener;
-    @NonNull private final DatabaseReference matchReference;
-
+    @Nullable private TurnListener turnListener;
+    @Nullable private RejectListener rejectListener;
+    @Nullable private DatabaseReference matchReference;
     @Nullable private DatabaseReference moveReference;
 
-    FirebaseBot(DatabaseReference playerReference, String playerUid) {
-        matchReference = playerReference.child(playerUid).child("matches");
+    void init(DatabaseReference playerReference, String playerUid, String botName) {
+        Log.i("FirebaseBot", "init playerUid:" + playerUid + " botName:" + botName);
+        name = botName;
+        matchReference = playerReference.child("matches");
         matchReference.addChildEventListener(new MatchListener(this));
         turnListener = new TurnListener(this);
         rejectListener = new RejectListener(this);
     }
 
     @Override
-    public void onJoinedMatch(@NonNull String uuid) {
-        Log.i(name, "onJoinedMatch");
+    public final void onJoinedMatch(@NonNull String uuid) {
+        Log.i("FirebaseBot", "onJoinedMatch:" + uuid);
         // Dummy Response
         moveReference = matchReference.child(uuid);
 
         moveReference.child("board").addValueEventListener(turnListener);
         moveReference.child("try").addValueEventListener(rejectListener);
+        onStartMatch(uuid, 0);
     }
 
     @Override
-    public void onYourTurn(@NonNull String board) {
-        int row = (int) (Math.random() * 8);
-        int col = (int) (Math.random() * 8);
-        moveReference.child("try").setValue(String.format("[%s,%s]", row, col));
+    public final void onYourTurn(@NonNull String board) {
+        Log.i("FirebaseBot", "onYourTurn:" + board);
+        onCalculateMove(board);
     }
-
 
     @Override
-    public void onMoveRejected(@NonNull String move) {
-        onYourTurn("");
+    public final void onMoveRejected(@NonNull String move) {
+        Log.i("FirebaseBot", "onMoveRejected:" + move);
+        onRejected("TODO -> Pass Current Board");
     }
+
+    protected final void submitMove(String move) {
+        Log.i("FirebaseBot", "submitMove:" + move);
+        moveReference.child("try").setValue(move);
+    }
+
+    public abstract void onStartMatch(@NonNull final String matchUid, final int yourStoneColor);
+    public abstract void onRejected(@NonNull final String board);
+    public abstract void onCalculateMove(@NonNull final String board);
 }

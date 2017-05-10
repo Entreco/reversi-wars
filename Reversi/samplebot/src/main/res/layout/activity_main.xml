@@ -5,9 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context="nl.entreco.reversibot.MatchActivity"
-    tools:showIn="@layout/activity_match">
+    tools:context="nl.entreco.samplebot.MainActivity">
 
     <TextView
         android:layout_width="wrap_content"

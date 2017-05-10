@@ -11,8 +11,11 @@ import android.support.annotation.Nullable;
 
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 public class InitProvider extends ContentProvider {
+
     private static final String API_KEY = "AIzaSyA7ruSb75KcdYojOy4UDX-JNC_vagp01no";
     private static final String APPLICATION_ID = "reversi-wars";
     private static final String DATABASE_URL = "https://reversi-wars.firebaseio.com";
@@ -24,7 +27,16 @@ public class InitProvider extends ContentProvider {
                 .setApplicationId(APPLICATION_ID)
                 .setDatabaseUrl(DATABASE_URL)
                 .build());
+
         return true;
+    }
+
+    public static <T extends FirebaseBot> void registerBot(@NonNull final T bot,
+                                                           @NonNull final String botName) {
+        final DatabaseReference push = FirebaseDatabase.getInstance().getReference("players").push();
+        final String playerUid = push.getKey();
+        bot.init(push, playerUid, botName);
+        push.setValue(bot);
     }
 
     @Override
@@ -34,7 +46,7 @@ public class InitProvider extends ContentProvider {
         }
         // So if the authorities equal the library internal ones, the developer forgot to set his
         // applicationId
-        if ("nl.entreco.reversi.init.InitProvider".equals(providerInfo.authority)) {
+        if ("nl.entreco.reversibot.InitProvider".equals(providerInfo.authority)) {
             throw new IllegalStateException(
                     "Incorrect provider authority in manifest. Most likely due to a "
                             + "missing applicationId variable in application\'s build.gradle.");

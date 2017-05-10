@@ -1,4 +1,4 @@
-package nl.entreco.reversibot;
+package nl.entreco.samplebot;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
@@ -21,6 +21,6 @@ public class ExampleInstrumentedTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
 
-        assertEquals("nl.entreco.reversibot", appContext.getPackageName());
+        assertEquals("nl.entreco.samplebot", appContext.getPackageName());
     }
 }
