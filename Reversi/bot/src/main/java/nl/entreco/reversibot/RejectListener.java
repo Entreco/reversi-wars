@@ -9,6 +9,7 @@ import com.google.firebase.database.ValueEventListener;
 
 class RejectListener implements ValueEventListener {
     private final Callback callback;
+    private String lastMove;
 
     interface Callback {
         void onMoveRejected(@NonNull final String move);
@@ -21,8 +22,11 @@ class RejectListener implements ValueEventListener {
     @Override
     public final void onDataChange(DataSnapshot dataSnapshot) {
         Log.i("FirebaseBot", "RejectListener onDataChange:" + dataSnapshot.getValue());
-        if(dataSnapshot.getValue() != null && dataSnapshot.getValue().equals("rejected")) {
-            callback.onMoveRejected(dataSnapshot.getValue().toString());
+        if(dataSnapshot.getValue() != null) {
+            if (dataSnapshot.getValue().equals("rejected")) {
+                callback.onMoveRejected(lastMove);
+            }
+            lastMove = dataSnapshot.getValue().toString();
         }
     }
 

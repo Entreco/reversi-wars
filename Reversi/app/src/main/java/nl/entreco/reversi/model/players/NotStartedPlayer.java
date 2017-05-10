@@ -29,6 +29,11 @@ public class NotStartedPlayer implements Player {
     }
 
     @Override
+    public void onGameFinished(int yourScore, int opponentScore) {
+
+    }
+
+    @Override
     public int getStoneColor() {
         return Stone.EMPTY;
     }

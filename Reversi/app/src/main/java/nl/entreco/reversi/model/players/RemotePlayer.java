@@ -6,6 +6,7 @@ import android.support.annotation.Nullable;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.IgnoreExtraProperties;
 import com.google.firebase.database.ValueEventListener;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -15,6 +16,9 @@ import nl.entreco.reversi.model.Move;
 
 public class RemotePlayer extends BasePlayer {
 
+    private static final int POINTS_WIN = 3;
+    private static final int POINTS_DRAW = 1;
+    private static final int POINTS_LOSS = 0;
     @NonNull private final DatabaseReference playersReference;
     @NonNull private final PlayerData playerData;
     @NonNull private final String remoteUuid;
@@ -27,6 +31,28 @@ public class RemotePlayer extends BasePlayer {
         this.remoteUuid = remoteUuid;
         this.playersReference = playersReference.child(remoteUuid);
         this.gson = new GsonBuilder().create();
+    }
+
+    @Override
+    public void onJoinedGame(@NonNull String gameUuid) {
+        super.onJoinedGame(gameUuid);
+        // Create new Node to hold our moves
+        this.matchReference = this.playersReference.child("matches").push();
+        this.matchReference.child("stoneColor").setValue(getStoneColor());
+        this.matchReference.child("matchId").setValue(gameUuid);
+    }
+
+    @Override
+    public void onGameFinished(int yourScore, int opponentScore) {
+        super.onGameFinished(yourScore, opponentScore);
+        // Notify
+        String matchKey = matchReference.getKey();
+        int points = getPointsForScores(yourScore, opponentScore);
+        this.playersReference.child("results").push().setValue(new ReversiResult(matchKey, yourScore, opponentScore, points));
+    }
+
+    private int getPointsForScores(int yourScore, int opponentScore) {
+        return yourScore > opponentScore ? POINTS_WIN : (yourScore == opponentScore) ? POINTS_DRAW : POINTS_LOSS;
     }
 
     @Override
@@ -62,14 +88,6 @@ public class RemotePlayer extends BasePlayer {
         this.matchReference.child("try").setValue("rejected");
     }
 
-    @Override
-    public void onJoinedGame(@NonNull String gameUuid) {
-        super.onJoinedGame(gameUuid);
-        // Create new Node to hold our moves
-        this.matchReference = this.playersReference.child("matches").push();
-        this.matchReference.child("matchId").setValue(gameUuid);
-    }
-
     @NonNull
     @Override
     public String getName() {
@@ -86,5 +104,20 @@ public class RemotePlayer extends BasePlayer {
     @Override
     public boolean isHuman() {
         return false;
+    }
+
+    @IgnoreExtraProperties
+    public class ReversiResult {
+        public String match;
+        public int me;
+        public int opponent;
+        public int points;
+
+        public ReversiResult(String matchKey, int yourScore, int opponentScore, int points) {
+            this.match = matchKey;
+            this.me = yourScore;
+            this.opponent = opponentScore;
+            this.points = points;
+        }
     }
 }

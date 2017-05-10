@@ -18,7 +18,12 @@ class SampleBot extends FirebaseBot {
     }
 
     @Override
-    public void onRejected(@NonNull String board) {
+    public void onMatchFinished() {
+        // Pass if we won, or lost
+    }
+
+    @Override
+    public void onRejected(@NonNull String move, @NonNull String board) {
         /* Format is (0 = empty,  1 = white , -1 = black):
             { "size":8,
               "board":[
@@ -33,7 +38,7 @@ class SampleBot extends FirebaseBot {
                       ]
             }
          */
-        Log.i("SampleBot", "onRejected:" + board);
+        Log.i("SampleBot", "onRejected move:" + move + " board:"+ board);
         onCalculateMove(board);
     }
 

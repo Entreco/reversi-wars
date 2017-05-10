@@ -15,6 +15,8 @@ public interface Player {
 
     void onMoveRejected(@NonNull final String board);
 
+    void onGameFinished(final int yourScore, final int opponentScore);
+
     @Stone.Color int getStoneColor();
 
     void setStoneColor(@Stone.Color int stoneColor);

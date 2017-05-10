@@ -38,6 +38,11 @@ public abstract class BasePlayer implements Player {
     }
 
     @Override
+    public void onGameFinished(int yourScore, int opponentScore) {
+        // You can see if you won
+    }
+
+    @Override
     public final int getStoneColor() {
         return stoneColor;
     }

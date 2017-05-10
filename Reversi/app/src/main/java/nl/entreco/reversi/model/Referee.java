@@ -104,6 +104,10 @@ public class Referee implements Arbiter, GameTimer.Callback {
             Log.w(TAG, "notifyGameFinished() but gameCallback is null");
         }
 
+        for(final Player player : playersList){
+            player.onGameFinished(getScore(player.getStoneColor()), getScore(player.getStoneColor() * -1));
+        }
+
         this.timer.stop();
         this.gameCallback = null;
     }
@@ -112,6 +116,16 @@ public class Referee implements Arbiter, GameTimer.Callback {
         int score = 0;
         for (final Stone stone : board.getStones()) {
             score += stone.color();
+        }
+        return score;
+    }
+
+    private int getScore(@Stone.Color int color){
+        int score = 0;
+        for (final Stone stone : board.getStones()) {
+            if(stone.color() == color) {
+                score += stone.color();
+            }
         }
         return score;
     }
