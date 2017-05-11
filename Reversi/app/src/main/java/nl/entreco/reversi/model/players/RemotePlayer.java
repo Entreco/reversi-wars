@@ -6,12 +6,12 @@ import android.support.annotation.Nullable;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.IgnoreExtraProperties;
 import com.google.firebase.database.ValueEventListener;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import nl.entreco.reversi.api.PlayerData;
+import nl.entreco.reversi.api.ReversiResult;
 import nl.entreco.reversi.model.Move;
 
 public class RemotePlayer extends BasePlayer {
@@ -47,7 +47,7 @@ public class RemotePlayer extends BasePlayer {
         super.onGameFinished(yourScore, opponentScore);
         // Notify
         String matchKey = matchReference.getKey();
-        int points = getPointsForScores(yourScore, opponentScore);
+        int points = getPointsForScores(Math.abs(yourScore), Math.abs(opponentScore));
         this.playersReference.child("results").push().setValue(new ReversiResult(matchKey, yourScore, opponentScore, points));
     }
 
@@ -106,18 +106,4 @@ public class RemotePlayer extends BasePlayer {
         return false;
     }
 
-    @IgnoreExtraProperties
-    public class ReversiResult {
-        public String match;
-        public int me;
-        public int opponent;
-        public int points;
-
-        public ReversiResult(String matchKey, int yourScore, int opponentScore, int points) {
-            this.match = matchKey;
-            this.me = yourScore;
-            this.opponent = opponentScore;
-            this.points = points;
-        }
-    }
 }
