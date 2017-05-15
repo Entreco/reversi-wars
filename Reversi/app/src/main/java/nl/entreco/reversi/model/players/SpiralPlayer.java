@@ -12,10 +12,10 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import nl.entreco.reversi.data.BoardData;
 import nl.entreco.reversi.model.Board;
 import nl.entreco.reversi.model.Move;
 import nl.entreco.reversi.model.Stone;
+import nl.entreco.reversi.model.util.BoardUtil;
 
 public class SpiralPlayer extends BasePlayer {
 
@@ -56,7 +56,7 @@ public class SpiralPlayer extends BasePlayer {
     }
 
     private void removeOccupiedStones(@NonNull String board) {
-        Board gameBoard = extractBoard(board);
+        Board gameBoard = BoardUtil.extractBoard(gson, board);
         for (final Stone stone : gameBoard) {
             if (stone.color() != Stone.EMPTY) {
                 final Point occupied = stoneToPoint(stone);
@@ -70,12 +70,6 @@ public class SpiralPlayer extends BasePlayer {
             movesDone.add(alreadyTried.remove(alreadyTried.size() - 1));
         }
         points.addAll(0, alreadyTried);
-    }
-
-
-
-    private Board extractBoard(String board) {
-        return gson.fromJson(board, BoardData.class).getBoard();
     }
 
     private void next() {

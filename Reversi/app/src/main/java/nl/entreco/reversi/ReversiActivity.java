@@ -2,8 +2,6 @@ package nl.entreco.reversi;
 
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
@@ -14,7 +12,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
-import nl.entreco.reversi.data.FetchPlayersUsecase;
 import nl.entreco.reversi.data.RemoteUsecase;
 import nl.entreco.reversi.databinding.ActivityReversiBinding;
 import nl.entreco.reversi.game.BoardAdapter;
@@ -40,10 +37,9 @@ public class ReversiActivity extends AppCompatActivity {
 
         final GameSettings settings = new GameSettings();
         final ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
-        final Handler mainHandler = new Handler(Looper.getMainLooper());
         final GameTimer timer = new GameTimer(executor);
         final Board board = new Board(settings.getBoardSize());
-        final Referee ref = new Referee(mainHandler, settings, timer, board);
+        final Referee ref = new Referee(executor, settings, timer, board);
         final BoardAdapter adapter = new BoardAdapter(ref);
         final Game game = new Game(adapter, ref);
 

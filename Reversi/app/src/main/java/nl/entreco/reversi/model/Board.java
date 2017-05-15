@@ -284,7 +284,7 @@ public class Board extends ArrayList<Stone> {
     }
 
     @NonNull
-    List<Move> findAllMoves(@Stone.Color int stone) {
+    public List<Move> findAllMoves(@Stone.Color int stone) {
         final Board copy = clone();
 
         // 1) Find Empty Stones
@@ -322,7 +322,7 @@ public class Board extends ArrayList<Stone> {
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
-    List<Stone> getStones() {
+    public List<Stone> getStones() {
         return this;
     }
 

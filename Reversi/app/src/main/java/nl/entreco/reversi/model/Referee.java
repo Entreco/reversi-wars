@@ -1,7 +1,7 @@
 package nl.entreco.reversi.model;
 
 import android.os.Handler;
-import android.os.Looper;
+import android.os.HandlerThread;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
@@ -13,6 +13,8 @@ import com.google.gson.JsonSyntaxException;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class Referee implements Arbiter, GameTimer.Callback {
@@ -25,20 +27,22 @@ public class Referee implements Arbiter, GameTimer.Callback {
     @NonNull private final Gson gson;
     @NonNull private final Board board;
     @NonNull private volatile AtomicInteger currentPlayer;
-    @NonNull private final Handler handler;
+    @NonNull private final ScheduledExecutorService playerHandler;
 
     @Nullable private GameCallback gameCallback;
     private final long uiDelay;
 
-    public Referee(@NonNull final Handler handler, @NonNull final GameSettings settings, @NonNull final GameTimer timer,
+    public Referee(@NonNull final ScheduledExecutorService playerHandler,
+                   @NonNull final GameSettings settings,
+                   @NonNull final GameTimer timer,
                    @NonNull final Board board) {
-        this.handler = handler;
         this.settings = settings;
         this.timer = timer;
         this.gson = new GsonBuilder().create();
         this.board = board;
         this.currentPlayer = new AtomicInteger(settings.getStartIndex());
         this.uiDelay = settings.getUiDelay();
+        this.playerHandler = playerHandler;
     }
 
     @Override
@@ -65,7 +69,7 @@ public class Referee implements Arbiter, GameTimer.Callback {
     @Override
     public void clear() {
         this.playersList.clear();
-        this.currentPlayer.set( settings.getStartIndex() );
+        this.currentPlayer.set(settings.getStartIndex());
 
     }
 
@@ -83,16 +87,26 @@ public class Referee implements Arbiter, GameTimer.Callback {
         final Player player = playersList.get(currentPlayer.get());
         final @Stone.Color int stoneColor = player.getStoneColor();
         if (board.canMove(stoneColor)) {
-            player.yourTurn(board.toJson());
 
-            if (!player.isHuman()) {
-                timer.start(this, player, settings.getTimeout());
-            }
+            notifyPlayer(player);
 
         } else if (board.canMove(-1 * stoneColor)) {
             notifyNextPlayer(player);
         } else {
             notifyGameFinished();
+        }
+    }
+
+    private void notifyPlayer(@NonNull final Player player) {
+        playerHandler.schedule(new Runnable() {
+            @Override
+            public void run() {
+                player.yourTurn(board.toJson());
+            }
+        }, 10, TimeUnit.MILLISECONDS);
+
+        if (!player.isHuman()) {
+            timer.start(this, player, settings.getTimeout());
         }
     }
 
@@ -104,8 +118,9 @@ public class Referee implements Arbiter, GameTimer.Callback {
             Log.w(TAG, "notifyGameFinished() but gameCallback is null");
         }
 
-        for(final Player player : playersList){
-            player.onGameFinished(getScore(player.getStoneColor()), getScore(player.getStoneColor() * -1));
+        for (final Player player : playersList) {
+            player.onGameFinished(getScore(player.getStoneColor()),
+                    getScore(player.getStoneColor() * -1));
         }
 
         this.timer.stop();
@@ -120,10 +135,10 @@ public class Referee implements Arbiter, GameTimer.Callback {
         return score;
     }
 
-    private int getScore(@Stone.Color int color){
+    private int getScore(@Stone.Color int color) {
         int score = 0;
         for (final Stone stone : board.getStones()) {
-            if(stone.color() == color) {
+            if (stone.color() == color) {
                 score += stone.color();
             }
         }
@@ -135,7 +150,7 @@ public class Referee implements Arbiter, GameTimer.Callback {
     public List<Stone> onMoveReceived(@NonNull Player player, String move) {
         Log.d(TAG, "onMoveReceived -> player:" + player + " move:" + move);
 
-        if(isPlayersTurn(player)) {
+        if (isPlayersTurn(player)) {
             if (isValidPosition(move)) {
                 final List<Stone> updated = updateBoard(move, player.getStoneColor());
                 if (updated.size() > 0) {
@@ -189,14 +204,8 @@ public class Referee implements Arbiter, GameTimer.Callback {
 
     public void notifyNextPlayer(@NonNull Player previousPlayer) {
         int indexOfPreviousPlayer = playersList.indexOf(previousPlayer);
-        currentPlayer.set( (indexOfPreviousPlayer + 1) % playersList.size() );
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                switchPlayers();
-            }
-        }, uiDelay);
-
+        currentPlayer.set((indexOfPreviousPlayer + 1) % playersList.size());
+        switchPlayers();
     }
 
     @NonNull

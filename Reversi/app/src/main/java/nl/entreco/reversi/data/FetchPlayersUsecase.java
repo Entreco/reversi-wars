@@ -43,8 +43,6 @@ public class FetchPlayersUsecase implements ChildEventListener {
         foundPlayer(new UserPlayer());
         foundPlayer(new UserPlayer());
         foundPlayer(new RandomPlayer());
-        foundPlayer(new RandomPlayer());
-        foundPlayer(new SpiralPlayer());
         foundPlayer(new SpiralPlayer());
         foundPlayer(new BeatMePlayer());
 
