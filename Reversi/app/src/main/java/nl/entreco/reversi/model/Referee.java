@@ -1,7 +1,6 @@
 package nl.entreco.reversi.model;
 
-import android.os.Handler;
-import android.os.HandlerThread;
+import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
@@ -13,8 +12,6 @@ import com.google.gson.JsonSyntaxException;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class Referee implements Arbiter, GameTimer.Callback {
@@ -27,13 +24,9 @@ public class Referee implements Arbiter, GameTimer.Callback {
     @NonNull private final Gson gson;
     @NonNull private final Board board;
     @NonNull private volatile AtomicInteger currentPlayer;
-    @NonNull private final ScheduledExecutorService playerHandler;
-
     @Nullable private GameCallback gameCallback;
-    private final long uiDelay;
 
-    public Referee(@NonNull final ScheduledExecutorService playerHandler,
-                   @NonNull final GameSettings settings,
+    public Referee(@NonNull final GameSettings settings,
                    @NonNull final GameTimer timer,
                    @NonNull final Board board) {
         this.settings = settings;
@@ -41,8 +34,6 @@ public class Referee implements Arbiter, GameTimer.Callback {
         this.gson = new GsonBuilder().create();
         this.board = board;
         this.currentPlayer = new AtomicInteger(settings.getStartIndex());
-        this.uiDelay = settings.getUiDelay();
-        this.playerHandler = playerHandler;
     }
 
     @Override
@@ -84,6 +75,7 @@ public class Referee implements Arbiter, GameTimer.Callback {
     }
 
     private void switchPlayers() {
+        Log.i("THREAD", "Arbiter::switchPlayers:" + Thread.currentThread() + " main:" + (Looper.myLooper() == Looper.getMainLooper()));
         final Player player = playersList.get(currentPlayer.get());
         final @Stone.Color int stoneColor = player.getStoneColor();
         if (board.canMove(stoneColor)) {
@@ -98,13 +90,8 @@ public class Referee implements Arbiter, GameTimer.Callback {
     }
 
     private void notifyPlayer(@NonNull final Player player) {
-        playerHandler.schedule(new Runnable() {
-            @Override
-            public void run() {
-                player.yourTurn(board.toJson());
-            }
-        }, 10, TimeUnit.MILLISECONDS);
-
+        Log.i("THREAD", "Arbiter::notifyPlayer: " + Thread.currentThread() + " main:" + (Looper.myLooper() == Looper.getMainLooper()));
+        player.yourTurn(board.toJson());
         if (!player.isHuman()) {
             timer.start(this, player, settings.getTimeout());
         }
@@ -148,6 +135,7 @@ public class Referee implements Arbiter, GameTimer.Callback {
     @NonNull
     @Override
     public List<Stone> onMoveReceived(@NonNull Player player, String move) {
+        Log.i("THREAD", "Arbiter::onMoveReceived: " + Thread.currentThread() + " main:" + (Looper.myLooper() == Looper.getMainLooper()));
         Log.d(TAG, "onMoveReceived -> player:" + player + " move:" + move);
 
         if (isPlayersTurn(player)) {
@@ -197,6 +185,7 @@ public class Referee implements Arbiter, GameTimer.Callback {
 
     @Override
     public void onTimedOut(@NonNull final Player player) {
+        Log.i("THREAD", "onTimedOut: " + Thread.currentThread() + " main:" + (Looper.myLooper() == Looper.getMainLooper()));
         Log.d(TAG, "onTimedOut:" + player);
         notifyNextPlayer(player);
 

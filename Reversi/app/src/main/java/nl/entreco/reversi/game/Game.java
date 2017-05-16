@@ -2,15 +2,14 @@ package nl.entreco.reversi.game;
 
 import android.databinding.ObservableField;
 import android.databinding.ObservableInt;
-import android.databinding.ObservableLong;
-import android.os.Handler;
+import android.os.Looper;
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 import java.util.List;
 
 import nl.entreco.reversi.model.Arbiter;
 import nl.entreco.reversi.model.GameCallback;
-import nl.entreco.reversi.model.GameSettings;
 import nl.entreco.reversi.model.Move;
 import nl.entreco.reversi.model.Player;
 import nl.entreco.reversi.model.Stone;
@@ -24,7 +23,6 @@ public class Game implements GameCallback {
     @NonNull public final ObservableField<Player> winner;
     @NonNull public final ObservableField<Player> current;
     @NonNull public final ObservableField<Player> rejected;
-    @NonNull public final ObservableLong timeout;
 
     @NonNull public final ObservableField<Player> player1;
     @NonNull public final ObservableField<Player> player2;
@@ -45,7 +43,6 @@ public class Game implements GameCallback {
         this.winner = new ObservableField<>();
         this.current = new ObservableField<>();
         this.rejected = new ObservableField<>();
-        this.timeout = new ObservableLong(GameSettings.timeout);
     }
 
     public void startGame(@NonNull final String uuid) {
@@ -85,6 +82,7 @@ public class Game implements GameCallback {
 
     @Override
     public void setCurrentPlayer(@NonNull Player player) {
+        Log.i("THREAD", "Game::setCurrentPlayer: " + Thread.currentThread() + " main:" + (Looper.myLooper() == Looper.getMainLooper()));
         current.set(player);
         adapter.setCurrentPlayer(player, this);
     }
@@ -92,7 +90,7 @@ public class Game implements GameCallback {
 
     @Override
     public void submitMove(@NonNull final Player player, @NonNull final Move move) {
-
+        Log.i("THREAD", "Game::submitMove: " + Thread.currentThread() + " main:" + (Looper.myLooper() == Looper.getMainLooper()));
         final List<Stone> flipped = arbiter.onMoveReceived(player, move.toString());
         if (flipped.size() > 0) {
 
@@ -111,13 +109,9 @@ public class Game implements GameCallback {
 
     @Override
     public void onMoveRejected(@NonNull Player player) {
+        Log.i("THREAD", "Game::onMoveRejected: " + Thread.currentThread() + " main:" + (Looper.myLooper() == Looper.getMainLooper()));
         rejected.set(player);
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                rejected.set(null);
-            }
-        }, 250);
+        rejected.set(null);
     }
 
 

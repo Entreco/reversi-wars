@@ -56,9 +56,7 @@ public class RemotePlayer extends BasePlayer {
     }
 
     @Override
-    public void yourTurn(@NonNull String board) {
-        super.yourTurn(board);
-        // Push board to Firebase match
+    void handleTurn(@NonNull String board) {
         if(matchReference != null) {
             this.matchReference.child("board").setValue(board);
             this.matchReference.child("try").addValueEventListener(new ValueEventListener() {
@@ -78,14 +76,13 @@ public class RemotePlayer extends BasePlayer {
         }
     }
 
-    private Move parseMove(String moveData) {
-        return gson.fromJson(moveData, Move.class);
+    @Override
+    void onRejected(@NonNull String board) {
+        this.matchReference.child("try").setValue("rejected");
     }
 
-    @Override
-    public void onMoveRejected(@NonNull String board) {
-        super.onMoveRejected(board);
-        this.matchReference.child("try").setValue("rejected");
+    private Move parseMove(String moveData) {
+        return gson.fromJson(moveData, Move.class);
     }
 
     @NonNull

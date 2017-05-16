@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
 import android.os.CountDownTimer;
+import android.os.Looper;
 import android.support.design.widget.FloatingActionButton;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -48,7 +49,7 @@ public class CountDownActionButton extends FloatingActionButton {
             @Override
             public void onTick(long millisUntilFinished) {
                 elapsed = ((countDown - millisUntilFinished) * 1.0F/ countDown) * 360.0F;
-                postInvalidate();
+                invalidate();
             }
 
             @Override
@@ -65,27 +66,28 @@ public class CountDownActionButton extends FloatingActionButton {
         oval = new RectF(STROKE_WIDTH, STROKE_WIDTH, 2*radius - STROKE_WIDTH, 2*radius - STROKE_WIDTH);
     }
 
-    public void startCountDown(final long countDown){
+    public void startCountDown(){
+        Log.i("THREAD", "Fab::startCountDown: " + Thread.currentThread() + " main:" + (Looper.myLooper() == Looper.getMainLooper()));
         Log.i("TIMER", "startCountDown");
         elapsed = 0;
         timer.start();
-        postInvalidate();
+        invalidate();
     }
 
     public void cancelCountDown(){
+        Log.i("THREAD", "Fab::cancelCountDown: " + Thread.currentThread() + " main:" + (Looper.myLooper() == Looper.getMainLooper()));
         Log.i("TIMER", "cancelCountDown");
         elapsed = 360F;
         if(timer != null){
             timer.cancel();
         }
-        postInvalidate();
+        invalidate();
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         final float sweepAngle = 360F - elapsed;
-        Log.i("TIMER", "onDraw start:" + START_ANGLE + " to:" + sweepAngle + " timer:" + timer);
         if(timer != null && elapsed < 360F) {
             canvas.drawArc(oval, START_ANGLE, sweepAngle, false, paint);
         }

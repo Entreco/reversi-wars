@@ -1,8 +1,6 @@
 package nl.entreco.reversi.game;
 
 import android.databinding.DataBindingUtil;
-import android.os.Handler;
-import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
@@ -73,23 +71,18 @@ public class BoardAdapter extends RecyclerView.Adapter<StoneHolder>
     }
 
     void start() {
-        if(shouldAnimate()){
+        if (shouldAnimate()) {
             notifyDataSetChanged();
         }
     }
 
     void update(final Move move, final @Stone.Color int stoneColor) {
-        new Handler(Looper.getMainLooper()).post(new Runnable() {
-            @Override
-            public void run() {
-                List<Stone> flipped = board.apply(move, stoneColor);
-                notifyChanged(board.getItemPosition(move));
+        List<Stone> flipped = board.apply(move, stoneColor);
+        notifyChanged(board.getItemPosition(move));
 
-                for (final Stone turned : flipped) {
-                    notifyChanged(board.getItemPosition(turned.row(), turned.col()));
-                }
-            }
-        });
+        for (final Stone turned : flipped) {
+            notifyChanged(board.getItemPosition(turned.row(), turned.col()));
+        }
     }
 
     private void notifyChanged(int position) {

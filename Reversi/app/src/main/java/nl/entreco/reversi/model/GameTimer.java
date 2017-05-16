@@ -1,5 +1,7 @@
 package nl.entreco.reversi.model;
 
+import android.os.Handler;
+import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
@@ -11,11 +13,13 @@ import java.util.concurrent.TimeUnit;
 
 public class GameTimer implements Runnable {
 
+
     interface Callback {
         void onTimedOut(@NonNull final Player player);
     }
 
     @NonNull private final ScheduledExecutorService executor;
+    @NonNull private final Handler handler;
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     @Nullable Callback callback;
@@ -26,15 +30,23 @@ public class GameTimer implements Runnable {
     @Nullable private Player player;
 
     public GameTimer(@NonNull final ScheduledExecutorService executor) {
+        this.handler = new Handler(Looper.getMainLooper());
         this.executor = executor;
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     void onTimedout() {
-        if (callback != null && player != null) {
-            callback.onTimedOut(player);
-        }
-        stop();
+        Log.i("THREAD", "GameTimer::onTimedOut: " + Thread.currentThread() + " main:" + (Looper
+                .myLooper() == Looper.getMainLooper()));
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                if (callback != null && player != null) {
+                    callback.onTimedOut(player);
+                }
+                stop();
+            }
+        });
     }
 
     @Override
@@ -44,6 +56,8 @@ public class GameTimer implements Runnable {
 
     public void start(@NonNull final Callback callback, @NonNull final Player player,
                       long timeoutInMilis) {
+        Log.i("THREAD", "GameTimer::start: " + Thread.currentThread() + " main:" + (Looper
+                .myLooper() == Looper.getMainLooper()));
         stop();
 
         this.callback = callback;
@@ -52,6 +66,8 @@ public class GameTimer implements Runnable {
     }
 
     void stop() {
+        Log.i("THREAD", "GameTimer::stop: " + Thread.currentThread() + " main:" + (Looper
+                .myLooper() == Looper.getMainLooper()));
         this.callback = null;
         this.player = null;
         if (this.scheduledFuture != null) {

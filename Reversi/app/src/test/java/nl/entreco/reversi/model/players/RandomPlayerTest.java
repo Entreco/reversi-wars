@@ -38,7 +38,7 @@ public class RandomPlayerTest {
         subject = new RandomPlayer() {
             @NonNull
             @Override
-            protected Handler getHandler() {
+            protected Handler getMainLooper() {
                 return mockHandler;
             }
         };

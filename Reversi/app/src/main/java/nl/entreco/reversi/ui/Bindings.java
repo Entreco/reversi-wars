@@ -98,10 +98,10 @@ public class Bindings {
         }
     }
 
-    @BindingAdapter({"timePlayer", "timeOut"})
-    public static void trackTimeForPlayer(@NonNull final CountDownActionButton view, @Nullable final Player current, final long timeInMilis){
+    @BindingAdapter({"timePlayer"})
+    public static void trackTimeForPlayer(@NonNull final CountDownActionButton view, @Nullable final Player current){
         if(current != null && !current.isHuman()){
-            view.startCountDown(timeInMilis);
+            view.startCountDown();
         } else {
             view.cancelCountDown();
         }

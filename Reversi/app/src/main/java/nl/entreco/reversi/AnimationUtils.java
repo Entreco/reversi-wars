@@ -21,7 +21,7 @@ public class AnimationUtils {
                               @NonNull Player rejected) {
         if (stone == rejected.getStoneColor()) {
 
-            float rot = 5f;
+            float rot = 10f;
             float startRotation = view.getRotation();
             Animator anim1 = ObjectAnimator.ofFloat(view, "rotation", startRotation, rot);
             Animator anim2 = ObjectAnimator.ofFloat(view, "rotation", rot, -rot);
@@ -34,7 +34,7 @@ public class AnimationUtils {
             set1.setDuration(50);
             set1.start();
 
-            float trans = 5f;
+            float trans = 16f;
             float start = view.getTranslationX();
             Animator anim6 = ObjectAnimator.ofFloat(view, "translationX", start, trans);
             Animator anim7 = ObjectAnimator.ofFloat(view, "translationX", trans, -trans);

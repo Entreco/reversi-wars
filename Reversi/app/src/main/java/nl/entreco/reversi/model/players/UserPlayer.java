@@ -9,15 +9,13 @@ public class UserPlayer extends BasePlayer {
     }
 
     @Override
-    public void yourTurn(@NonNull String board) {
-        super.yourTurn(board);
-        // Nothing
+    void onRejected(@NonNull String board) {
+
     }
 
     @Override
-    public void onMoveRejected(@NonNull String board) {
-        super.onMoveRejected(board);
-        // Let user Click again...
+    void handleTurn(@NonNull String board) {
+
     }
 
     @NonNull

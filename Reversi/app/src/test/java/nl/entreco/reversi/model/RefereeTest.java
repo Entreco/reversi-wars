@@ -40,7 +40,6 @@ public class RefereeTest {
 
     private Referee subject;
 
-    @Mock private Handler mockHandler;
     @Mock private GameSettings mockGameSettings;
     @Mock private GameTimer mockTimer;
     @Mock private Board mockBoard;
@@ -61,7 +60,7 @@ public class RefereeTest {
         when(mockOpponent.getStoneColor()).thenReturn(Stone.WHITE);
         when(mockBoard.getBoardSize()).thenReturn(BOARD_SIZE);
 
-        subject = new Referee(mockHandler, mockGameSettings, mockTimer, mockBoard);
+        subject = new Referee(mockGameSettings, mockTimer, mockBoard);
     }
 
     @Test
@@ -334,8 +333,7 @@ public class RefereeTest {
     }
 
     private void simulateRun() {
-        verify(mockHandler).postDelayed(runnableCaptor.capture(), anyLong());
-        runnableCaptor.getValue().run();
+
     }
 
     private void simulateGameFinished(Player... players) {

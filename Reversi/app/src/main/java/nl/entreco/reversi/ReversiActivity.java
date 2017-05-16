@@ -39,7 +39,7 @@ public class ReversiActivity extends AppCompatActivity {
         final ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
         final GameTimer timer = new GameTimer(executor);
         final Board board = new Board(settings.getBoardSize());
-        final Referee ref = new Referee(executor, settings, timer, board);
+        final Referee ref = new Referee(settings, timer, board);
         final BoardAdapter adapter = new BoardAdapter(ref);
         final Game game = new Game(adapter, ref);
 

@@ -42,9 +42,12 @@ public class SpiralPlayer extends BasePlayer {
     }
 
     @Override
-    public void yourTurn(@NonNull String board) {
-        super.yourTurn(board);
+    void onRejected(@NonNull String board) {
+        next();
+    }
 
+    @Override
+    void handleTurn(@NonNull String board) {
         resetPointsWithGoodMoves();
         removeOccupiedStones(board);
 
@@ -82,12 +85,7 @@ public class SpiralPlayer extends BasePlayer {
         Log.i("SPIRAL",
                 "movesDone:" + movesDone.size() + " " + Arrays.toString(movesDone.toArray()));
 
-        getHandler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                submitMove(move);
-            }
-        }, 10);
+        submitMove(move);
     }
 
     @NonNull
@@ -98,12 +96,6 @@ public class SpiralPlayer extends BasePlayer {
     @NonNull
     private Move pointToMove(Point point) {
         return new Move(point.y + 4, point.x + 4);
-    }
-
-    @Override
-    public void onMoveRejected(@NonNull String board) {
-        super.onMoveRejected(board);
-        next();
     }
 
     @NonNull
