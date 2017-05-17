@@ -92,6 +92,11 @@ public class Referee implements Arbiter, GameTimer.Callback {
     private void notifyPlayer(@NonNull final Player player) {
         Log.i("THREAD", "Arbiter::notifyPlayer: " + Thread.currentThread() + " main:" + (Looper.myLooper() == Looper.getMainLooper()));
         player.yourTurn(board.toJson());
+    }
+
+    @Override
+    public void startTimer(@NonNull Player player) {
+        Log.i("THREAD", "Arbiter::startTimer: " + Thread.currentThread() + " main:" + (Looper.myLooper() == Looper.getMainLooper()));
         if (!player.isHuman()) {
             timer.start(this, player, settings.getTimeout());
         }

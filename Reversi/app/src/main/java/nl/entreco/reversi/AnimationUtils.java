@@ -3,11 +3,13 @@ package nl.entreco.reversi;
 import android.animation.Animator;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
+import android.os.Looper;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
 import android.support.transition.TransitionManager;
 import android.support.v4.content.ContextCompat;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -27,7 +29,7 @@ public class AnimationUtils {
             Animator anim2 = ObjectAnimator.ofFloat(view, "rotation", rot, -rot);
             Animator anim3 = ObjectAnimator.ofFloat(view, "rotation", -rot, rot);
             Animator anim4 = ObjectAnimator.ofFloat(view, "rotation", rot, -rot);
-            Animator anim5 = ObjectAnimator.ofFloat(view, "rotation", -rot, startRotation);
+            Animator anim5 = ObjectAnimator.ofFloat(view, "rotation", -rot, 0);
 
             AnimatorSet set1 = new AnimatorSet();
             set1.playSequentially(anim1, anim2, anim3, anim4, anim5);
@@ -38,7 +40,7 @@ public class AnimationUtils {
             float start = view.getTranslationX();
             Animator anim6 = ObjectAnimator.ofFloat(view, "translationX", start, trans);
             Animator anim7 = ObjectAnimator.ofFloat(view, "translationX", trans, -trans);
-            Animator anim8 = ObjectAnimator.ofFloat(view, "translationX", -trans, start);
+            Animator anim8 = ObjectAnimator.ofFloat(view, "translationX", -trans, 0);
 
             AnimatorSet set2 = new AnimatorSet();
             set2.playSequentially(anim6, anim7, anim8);
@@ -52,6 +54,7 @@ public class AnimationUtils {
 
     public static void current(@NonNull View view, @Stone.Color int stone,
                                @NonNull Player player) {
+        Log.i("THREAD CURRENT", "AnimationUtils::current: " + Thread.currentThread() + " main:" + (Looper.myLooper() == Looper.getMainLooper()));
         if (stone == player.getStoneColor()) {
             view.animate().scaleX(1F).scaleY(1F).alpha(1F).start();
         } else {

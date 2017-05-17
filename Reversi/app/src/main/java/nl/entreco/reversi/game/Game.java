@@ -4,6 +4,7 @@ import android.databinding.ObservableField;
 import android.databinding.ObservableInt;
 import android.os.Looper;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.util.Log;
 
 import java.util.List;
@@ -82,7 +83,8 @@ public class Game implements GameCallback {
 
     @Override
     public void setCurrentPlayer(@NonNull Player player) {
-        Log.i("THREAD", "Game::setCurrentPlayer: " + Thread.currentThread() + " main:" + (Looper.myLooper() == Looper.getMainLooper()));
+        Log.i("THREAD CURRENT", "Game::setCurrentPlayer: " + Thread.currentThread() + " main:" + (Looper.myLooper() == Looper.getMainLooper()));
+        arbiter.startTimer(player);
         current.set(player);
         adapter.setCurrentPlayer(player, this);
     }
@@ -90,7 +92,7 @@ public class Game implements GameCallback {
 
     @Override
     public void submitMove(@NonNull final Player player, @NonNull final Move move) {
-        Log.i("THREAD", "Game::submitMove: " + Thread.currentThread() + " main:" + (Looper.myLooper() == Looper.getMainLooper()));
+        Log.i("THREAD CURRENT", "Game::submitMove: " + Thread.currentThread() + " main:" + (Looper.myLooper() == Looper.getMainLooper()));
         final List<Stone> flipped = arbiter.onMoveReceived(player, move.toString());
         if (flipped.size() > 0) {
 
@@ -108,10 +110,9 @@ public class Game implements GameCallback {
     }
 
     @Override
-    public void onMoveRejected(@NonNull Player player) {
+    public void onMoveRejected(@Nullable final Player player) {
         Log.i("THREAD", "Game::onMoveRejected: " + Thread.currentThread() + " main:" + (Looper.myLooper() == Looper.getMainLooper()));
         rejected.set(player);
-        rejected.set(null);
     }
 
 

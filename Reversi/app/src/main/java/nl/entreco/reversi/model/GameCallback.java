@@ -1,6 +1,7 @@
 package nl.entreco.reversi.model;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 public interface GameCallback {
 
@@ -8,7 +9,7 @@ public interface GameCallback {
 
     void submitMove(@NonNull final Player player,@NonNull final Move move);
 
-    void onMoveRejected(@NonNull final Player player);
+    void onMoveRejected(@Nullable final Player player);
 
     void onGameFinished(final int score);
 }

@@ -16,6 +16,8 @@ public interface Arbiter {
 
     void notifyNextPlayer(@NonNull final Player previousPlayer);
 
+    void startTimer(@NonNull final Player player);
+
     void onTimedOut(@NonNull final Player player);
 
     @NonNull

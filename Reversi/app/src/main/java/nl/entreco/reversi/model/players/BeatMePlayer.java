@@ -34,7 +34,7 @@ public class BeatMePlayer extends BasePlayer {
         moveList = gameBoard.findAllMoves(getStoneColor());
 
         final MoveValue minimax =
-                minimax(gameBoard, 2, Integer.MIN_VALUE, Integer.MAX_VALUE, getStoneColor(),
+                minimax(gameBoard, 4, Integer.MIN_VALUE, Integer.MAX_VALUE, getStoneColor(),
                         moveList.get(0));
         final Move best = minimax.move();
         Log.i("EVAL", "new BestMove:" + best + " score:" + minimax.value);
