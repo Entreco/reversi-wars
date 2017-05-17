@@ -70,11 +70,9 @@ public abstract class BasePlayer implements Player {
     @CallSuper
     @Override
     public final void yourTurn(@NonNull final String board) {
-        Log.i("THREAD", "BasePlayer::yourTurn: " + Thread.currentThread() + " main:" + (Looper.myLooper() == Looper.getMainLooper()));
         executor.schedule(new Runnable() {
             @Override
             public void run() {
-                Log.i("THREAD", "BasePlayer::handleTurn: " + Thread.currentThread() + " main:" + (Looper.myLooper() == Looper.getMainLooper()));
                 ourTurn();
                 handleTurn(board);
             }
@@ -84,13 +82,11 @@ public abstract class BasePlayer implements Player {
     @CallSuper
     @Override
     public final void onMoveRejected(@NonNull final String board) {
-        Log.i("THREAD CURRENT", "BasePlayer::onMoveRejected: " + Thread.currentThread() + " main:" + (Looper.myLooper() == Looper.getMainLooper()));
         reject();
 
         executor.schedule(new Runnable() {
             @Override
             public void run() {
-                Log.i("THREAD", "BasePlayer::onRejected: " + Thread.currentThread() + " main:" + (Looper.myLooper() == Looper.getMainLooper()));
                 onRejected(board);
             }
         }, 10, TimeUnit.MILLISECONDS);
@@ -118,7 +114,6 @@ public abstract class BasePlayer implements Player {
     }
 
     private void ourTurn() {
-        Log.i("THREAD", "BasePlayer::ourTurn: " + Thread.currentThread() + " main:" + (Looper.myLooper() == Looper.getMainLooper()));
         handler.post(new Runnable() {
             @Override
             public void run() {
@@ -130,7 +125,6 @@ public abstract class BasePlayer implements Player {
     }
 
     final void submitMove(@NonNull final Move move) {
-        Log.i("THREAD", "BasePlayer::submitMove: " + Thread.currentThread() + " main:" + (Looper.myLooper() == Looper.getMainLooper()));
         handler.post(new Runnable() {
             @Override
             public void run() {

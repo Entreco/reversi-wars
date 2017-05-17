@@ -75,7 +75,6 @@ public class Referee implements Arbiter, GameTimer.Callback {
     }
 
     private void switchPlayers() {
-        Log.i("THREAD", "Arbiter::switchPlayers:" + Thread.currentThread() + " main:" + (Looper.myLooper() == Looper.getMainLooper()));
         final Player player = playersList.get(currentPlayer.get());
         final @Stone.Color int stoneColor = player.getStoneColor();
         if (board.canMove(stoneColor)) {
@@ -90,13 +89,11 @@ public class Referee implements Arbiter, GameTimer.Callback {
     }
 
     private void notifyPlayer(@NonNull final Player player) {
-        Log.i("THREAD", "Arbiter::notifyPlayer: " + Thread.currentThread() + " main:" + (Looper.myLooper() == Looper.getMainLooper()));
         player.yourTurn(board.toJson());
     }
 
     @Override
     public void startTimer(@NonNull Player player) {
-        Log.i("THREAD", "Arbiter::startTimer: " + Thread.currentThread() + " main:" + (Looper.myLooper() == Looper.getMainLooper()));
         if (!player.isHuman()) {
             timer.start(this, player, settings.getTimeout());
         }
@@ -140,8 +137,6 @@ public class Referee implements Arbiter, GameTimer.Callback {
     @NonNull
     @Override
     public List<Stone> onMoveReceived(@NonNull Player player, String move) {
-        Log.i("THREAD", "Arbiter::onMoveReceived: " + Thread.currentThread() + " main:" + (Looper.myLooper() == Looper.getMainLooper()));
-        Log.d(TAG, "onMoveReceived -> player:" + player + " move:" + move);
 
         if (isPlayersTurn(player)) {
             if (isValidPosition(move)) {
@@ -190,8 +185,6 @@ public class Referee implements Arbiter, GameTimer.Callback {
 
     @Override
     public void onTimedOut(@NonNull final Player player) {
-        Log.i("THREAD", "onTimedOut: " + Thread.currentThread() + " main:" + (Looper.myLooper() == Looper.getMainLooper()));
-        Log.d(TAG, "onTimedOut:" + player);
         notifyNextPlayer(player);
 
     }

@@ -36,8 +36,6 @@ public class GameTimer implements Runnable {
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     void onTimedout() {
-        Log.i("THREAD", "GameTimer::onTimedOut: " + Thread.currentThread() + " main:" + (Looper
-                .myLooper() == Looper.getMainLooper()));
         handler.post(new Runnable() {
             @Override
             public void run() {
@@ -56,8 +54,6 @@ public class GameTimer implements Runnable {
 
     public void start(@NonNull final Callback callback, @NonNull final Player player,
                       long timeoutInMilis) {
-        Log.i("THREAD", "GameTimer::start: " + Thread.currentThread() + " main:" + (Looper
-                .myLooper() == Looper.getMainLooper()));
         stop();
 
         this.callback = callback;
@@ -66,8 +62,6 @@ public class GameTimer implements Runnable {
     }
 
     void stop() {
-        Log.i("THREAD", "GameTimer::stop: " + Thread.currentThread() + " main:" + (Looper
-                .myLooper() == Looper.getMainLooper()));
         this.callback = null;
         this.player = null;
         if (this.scheduledFuture != null) {

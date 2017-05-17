@@ -6,7 +6,6 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
 import android.os.CountDownTimer;
-import android.os.Looper;
 import android.support.design.widget.FloatingActionButton;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -67,7 +66,6 @@ public class CountDownActionButton extends FloatingActionButton {
     }
 
     public void startCountDown(){
-        Log.i("THREAD", "Fab::startCountDown: " + Thread.currentThread() + " main:" + (Looper.myLooper() == Looper.getMainLooper()));
         Log.i("TIMER", "startCountDown");
         elapsed = 0;
         timer.start();
@@ -75,7 +73,6 @@ public class CountDownActionButton extends FloatingActionButton {
     }
 
     public void cancelCountDown(){
-        Log.i("THREAD", "Fab::cancelCountDown: " + Thread.currentThread() + " main:" + (Looper.myLooper() == Looper.getMainLooper()));
         Log.i("TIMER", "cancelCountDown");
         elapsed = 360F;
         if(timer != null){
