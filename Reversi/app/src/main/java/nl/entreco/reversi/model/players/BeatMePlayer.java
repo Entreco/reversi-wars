@@ -7,7 +7,9 @@ import android.util.Log;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import nl.entreco.reversi.model.Board;
 import nl.entreco.reversi.model.Move;
@@ -42,11 +44,14 @@ public class BeatMePlayer extends BasePlayer {
         submitMove(best);
     }
 
-    private MoveValue minimax(final Board board, int depth, int alpha, int beta, int stone, Move bestMove) {
-        if (depth == 0) return new MoveValue(bestMove, evalBoard(board, stone, bestMove));
+    private MoveValue minimax(final Board board, int depth, int alpha, int beta, int stone,
+                              Move bestMove) {
+        if (depth == 0) {
+            return new MoveValue(bestMove, evalBoard(board, stone));
+        }
 
         final List<Move> moves = board.findAllMoves(stone);
-        if (moves.isEmpty()) return new MoveValue(bestMove, evalBoard(board, stone, bestMove));
+        if (moves.isEmpty()) return new MoveValue(bestMove, evalBoard(board, stone));
 
         if (stone == getStoneColor()) {
             // MAX
@@ -54,26 +59,18 @@ public class BeatMePlayer extends BasePlayer {
             for (final Move move : moves) {
                 final Board child = board.clone();
                 child.apply(move, stone);
-                Log.i("APPLY", "try move:" + move + " stone:" + stone);
-                Log.i("APPLY", child.toString());
-                Log.i("EVAL", "try move:" + move);
                 final int maxi = minimax(child, depth - 1, alpha, beta, -1 * stone, move).value();
-                Log.i("EVAL", "maxi:"+maxi + " score:" + score + " alpha:" + alpha);
 
-                if(maxi > score){
+                if (maxi > score) {
                     bestMove = move;
+                    Log.i("EVAL", "NEW BEST MOVE MAXI:" + bestMove + " score will be:" + maxi);
                 }
 
                 score = Math.max(score, maxi);
-                Log.i("EVAL", "max(maxi:"+maxi + " score:" + score + "): " + score);
                 alpha = Math.max(alpha, score);
-                Log.i("EVAL", "max(alpha:"+alpha + " score:" + score + "): " + alpha);
-                Log.i("EVAL", "move: "+move+"score:" + score + " alpha:" + alpha + " beta:" + beta);
 
-                Log.i("APPLY", "try move:" + move + " stone:" + stone + " score:" + score);
                 if (beta <= alpha) break;
             }
-            Log.i("EVAL", "new BestMove:" + bestMove + " score:" + score);
             return new MoveValue(bestMove, score);
         } else {
             // MIN
@@ -81,41 +78,28 @@ public class BeatMePlayer extends BasePlayer {
             for (final Move move : moves) {
                 final Board child = board.clone();
                 child.apply(move, stone);
-                Log.i("APPLY", "try move:" + move + " stone:" + stone);
-                Log.i("APPLY", child.toString());
-                Log.i("EVAL", "try move:" + move);
                 final int mini = minimax(child, depth - 1, alpha, beta, -1 * stone, move).value();
-                Log.i("EVAL", "mini:"+mini + " score:" + score + " beta:" + beta);
 
 
-                if(mini < score){
+                if (mini < score) {
                     bestMove = move;
+                    Log.i("EVAL", "NEW BEST MOVE MINI:" + bestMove + " score will be:" + mini);
                 }
 
                 score = Math.min(score, mini);
-                Log.i("EVAL", "min(mini:"+mini + " score:" + score + "): " + score);
 
                 beta = Math.min(beta, score);
-                Log.i("EVAL", "min(beta:"+beta + " score:" + score + "): " + beta);
-                Log.i("EVAL", "move: "+move+"score:" + score + " alpha:" + alpha + " beta:" + beta);
-                Log.i("APPLY", "try move:" + move + " stone:" + stone + " score:" + score);
                 if (beta <= alpha) break;
             }
-            Log.i("EVAL", "new BestMove:" + bestMove + " score:" + score);
             return new MoveValue(bestMove, score);
         }
     }
 
-    private int evalBoard(final Board board, int stoneColor, final Move move) {
+    private int evalBoard(final Board board, int stoneColor) {
         int corners = 100 * evalCorners(board, stoneColor);
         int safe = 10 * evalSafeStones(board, stoneColor);
         int stones = 1 * evalScore(board, stoneColor);
         int eval = corners + safe + stones;
-        Log.i("EVAL", "board(stone:"+stoneColor+")");
-        Log.i("EVAL", "" + board.toString());
-        Log.i("EVAL", "eval:" + eval + "(c:"+corners+", s:"+safe+", s:"+stones+")");
-        Log.i("BOARD EVAL APPLY", "" + board.toString());
-        Log.i("BOARD EVAL APPLY", "eval:" + eval + "(c:"+corners+", s:"+safe+", s:"+stones+") stoneColor:" + stoneColor + " move:" + move);
         return eval;
     }
 
@@ -123,15 +107,89 @@ public class BeatMePlayer extends BasePlayer {
     int evalCorners(final Board board, int stoneColor) {
         final int size = board.getBoardSize() - 1;
         int corners = getStone(board, 0, 0).color()
-        + getStone(board, 0, size).color()
-        + getStone(board, size, 0).color()
-        + getStone(board, size, size).color();
+                + getStone(board, 0, size).color()
+                + getStone(board, size, 0).color()
+                + getStone(board, size, size).color();
         return stoneColor * corners;
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     int evalSafeStones(final Board board, int stoneColor) {
-        return 0;
+        Map<Integer, Stone> safeStones = new HashMap<>();
+        new ZigZag(board, safeStones, stoneColor).go();
+
+        return safeStones.size();
+    }
+
+    private class ZigZag {
+        private final Board board;
+        private final int size;
+        private final Map<Integer, Stone> safeStones;
+        private int stoneColor;
+
+        public ZigZag(Board board, Map<Integer, Stone> safeStones, int stoneColor) {
+            this.board = board;
+            this.size = board.getBoardSize();
+            this.safeStones = safeStones;
+            this.stoneColor = stoneColor;
+        }
+
+        public void go() {
+            topLeft();
+            topRight();
+            bottomLeft();
+            bottomRight();
+        }
+
+        private Stone get(int row, int col){
+            return board.get(board.getItemPosition(row, col));
+        }
+
+        private void bottomRight() {
+            int row = size - 1;
+            int col = size - 1;
+            loop(row, col, -1, -1);
+        }
+
+        private void bottomLeft() {
+            int row = size - 1;
+            int col = 0;
+            loop(row, col, -1, 1);
+        }
+
+        private void topLeft() {
+            int row = 0;
+            int col = 0;
+            loop(row, col, 1, 1);
+        }
+
+        private void topRight() {
+            int row = 0;
+            int col = size - 1;
+            loop(row, col, 1, -1);
+        }
+
+        private void loop(int row, int col, int a, int b) {
+            if(get(row, col).color() == stoneColor) {
+                boolean shouldBreak = false;
+                for (int offset = 0; offset < size; offset++) {
+                    for (int i = 0; i <= offset; i++) {
+                        int checkRow = row + (a * (offset - i));
+                        int checkCol = col + (b * i);
+                        if(get(checkRow, checkCol).color() == stoneColor) {
+                            safeStones.put(checkRow * 10 + checkCol, get(checkRow, checkCol));
+                        } else {
+                            shouldBreak = true;
+                            break;
+                        }
+                    }
+
+                    if(shouldBreak){
+                        break;
+                    }
+                }
+            }
+        }
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)

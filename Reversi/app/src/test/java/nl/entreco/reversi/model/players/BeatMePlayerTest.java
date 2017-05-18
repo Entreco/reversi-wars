@@ -75,4 +75,95 @@ public class BeatMePlayerTest {
         assertEquals(0, subject.evalScore(board, Stone.WHITE));
         assertEquals(0, subject.evalScore(board, Stone.BLACK));
     }
+
+    @Test
+    public void itShouldZigZag() throws Exception {
+        int[][] board = {{1,2,3},
+                        {4,5,6},
+                        {7,8,9}};
+        assertEquals("142753",new ZigZag(board, 0).go());
+        assertEquals("362951", new ZigZag(board, 1).go());
+        assertEquals("748159", new ZigZag(board, 2).go());
+        assertEquals("968357", new ZigZag(board, 3).go());
+    }
+
+    private class ZigZag {
+        private final int[][] board;
+        private final int direction;
+
+        public ZigZag(int[][] board, int direction) {
+            this.board = board;
+            this.direction = direction;
+        }
+
+        public String go() {
+            switch(direction){
+                case 0: return topLeft();
+                case 1: return topRight();
+                case 2: return bottomLeft();
+                case 3: return bottomRight();
+            }
+            return "";
+        }
+
+        private String bottomRight() {
+            int row = board.length - 1;
+            int col = board.length - 1;
+            int steps = board.length;
+            StringBuilder builder = new StringBuilder();
+            for(int offset = 0; offset < steps ; offset ++) {
+                for (int i = 0; i <= offset; i++) {
+                    int checkRow = row - (offset - i);
+                    int checkCol = col - i;
+                    builder.append(board[checkRow][checkCol]);
+                }
+            }
+            return builder.toString();
+        }
+
+        private String bottomLeft() {
+            int row = board.length - 1;
+            int col = 0;
+            int steps = board.length;
+            StringBuilder builder = new StringBuilder();
+            for(int offset = 0; offset < steps ; offset ++) {
+                for (int i = 0; i <= offset; i++) {
+                    int checkRow = row - (offset - i);
+                    int checkCol = col + i;
+                    builder.append(board[checkRow][checkCol]);
+                }
+            }
+            return builder.toString();
+        }
+
+        private String topLeft() {
+            int row = 0;
+            int col = 0;
+            int steps = board.length;
+            StringBuilder builder = new StringBuilder();
+            for(int offset = 0; offset < steps ; offset ++) {
+                for (int i = 0; i <= offset; i++) {
+                    int checkRow = row + (offset - i);
+                    int checkCol = col + i;
+                    builder.append(board[checkRow][checkCol]);
+                }
+            }
+            return builder.toString();
+        }
+
+        private String topRight() {
+            int row = 0;
+            int col = board.length - 1;
+            int steps = board.length;
+            StringBuilder builder = new StringBuilder();
+            for(int offset = 0; offset < steps ; offset ++) {
+                for (int i = 0; i <= offset; i++) {
+                    int checkRow = row + (offset - i);
+                    int checkCol = col - i;
+                    builder.append(board[checkRow][checkCol]);
+                }
+            }
+            return builder.toString();
+        }
+    }
 }
