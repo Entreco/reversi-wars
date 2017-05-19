@@ -57,8 +57,8 @@ public class BeatMePlayerTest {
     public void itShouldExtractSafeStones() throws Exception {
         final Board board = BoardUtil.extractBoard(gson, SAFE_STONES_BLACK);
         System.out.println(board);
-        assertEquals(-8, subject.evalSafeStones(board, Stone.WHITE));
-        assertEquals(8, subject.evalSafeStones(board, Stone.BLACK));
+        assertEquals(2, subject.evalSafeStones(board, Stone.WHITE));
+        assertEquals(2, subject.evalSafeStones(board, Stone.BLACK));
 
     }
 

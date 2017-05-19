@@ -9,11 +9,11 @@ import org.mockito.junit.MockitoJUnitRunner;
 import java.util.UUID;
 
 import nl.entreco.reversi.data.FetchPlayersUsecase;
+import nl.entreco.reversi.data.RemoteUsecase;
 import nl.entreco.reversi.game.Game;
 import nl.entreco.reversi.model.Player;
 
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.verify;
@@ -25,6 +25,7 @@ public class ReversiViewModelTest {
 
     @InjectMocks ReversiViewModel subject;
     @Mock Game mockGame;
+    @Mock RemoteUsecase mockRemoteUsecase;
     @Mock FetchPlayersUsecase mockFetchPlayersUsecase;
 
     @Mock private Player mockPlayer1;
@@ -34,7 +35,7 @@ public class ReversiViewModelTest {
     public void itShouldFetchPlayers() throws Exception {
         subject.fetchPlayers();
 
-        verify(mockFetchPlayersUsecase).registerCallback(subject);
+        verify(mockRemoteUsecase).fetchPlayers(subject);
     }
 
     @Test
@@ -76,10 +77,7 @@ public class ReversiViewModelTest {
         subject.onPlayerSelected(mockPlayer1);
         subject.onPlayerSelected(mockPlayer2);
 
-        verify(mockGame).setWhitePlayer(mockPlayer1);
-        verify(mockGame).setBlackPlayer(mockPlayer2);
-        verify(mockGame).startGame(GAME_UID);
-        verify(mockFetchPlayersUsecase).unregisterCallback();
+        verify(mockRemoteUsecase).createMatch(subject, mockPlayer1, mockPlayer2);
     }
 
     @Test
@@ -97,6 +95,5 @@ public class ReversiViewModelTest {
 
         subject.onPlayerSelected(mockPlayer2);
         assertTrue(subject.player2.get().equals(mockPlayer2));
-        assertNotNull(subject.game.get());
     }
 }

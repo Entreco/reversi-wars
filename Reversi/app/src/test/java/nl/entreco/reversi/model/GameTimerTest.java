@@ -1,7 +1,11 @@
 package nl.entreco.reversi.model;
 
+import android.os.Handler;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -27,8 +31,11 @@ public class GameTimerTest {
 
     @Mock GameTimer.Callback mockCallback;
     @Mock ScheduledExecutorService mockExecutor;
+    @Mock Handler mockHandler;
     @Mock private ScheduledFuture<?> mockScheduledFuture;
     @Mock private Player mockPlayer;
+
+    @Captor ArgumentCaptor<Runnable> runnableCaptor;
 
     @Test
     public void itShouldStartTimerOnStart() throws Exception {
@@ -43,6 +50,9 @@ public class GameTimerTest {
         simulateStart(1L);
 
         subject.onTimedout();
+
+        verify(mockHandler).post(runnableCaptor.capture());
+        runnableCaptor.getValue().run();
 
         verify(mockCallback).onTimedOut(mockPlayer);
     }
@@ -72,7 +82,7 @@ public class GameTimerTest {
                     }
                 });
 
-        subject = new GameTimer(mockExecutor);
+        subject = new GameTimer(mockExecutor, mockHandler);
         subject.start(mockCallback, mockPlayer, timeout);
         assertNotNull(subject.callback);
     }

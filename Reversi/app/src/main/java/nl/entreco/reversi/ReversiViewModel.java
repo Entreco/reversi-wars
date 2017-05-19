@@ -84,7 +84,6 @@ public class ReversiViewModel implements FetchPlayersUsecase.Callback, PlayerSel
     }
 
     private void startNewGame() {
-
         remoteUsecase.createMatch(this, player1.get(), player2.get());
     }
 

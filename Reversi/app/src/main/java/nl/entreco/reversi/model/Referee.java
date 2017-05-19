@@ -78,9 +78,7 @@ public class Referee implements Arbiter, GameTimer.Callback {
         final Player player = playersList.get(currentPlayer.get());
         final @Stone.Color int stoneColor = player.getStoneColor();
         if (board.canMove(stoneColor)) {
-
             notifyPlayer(player);
-
         } else if (board.canMove(-1 * stoneColor)) {
             notifyNextPlayer(player);
         } else {

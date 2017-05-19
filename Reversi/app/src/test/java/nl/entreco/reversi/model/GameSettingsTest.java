@@ -16,7 +16,7 @@ public class GameSettingsTest {
     public void itShouldHaveCorrectDefaults() throws Exception {
         assertEquals(8, subject.getBoardSize());
         assertEquals(0, subject.getStartIndex());
-        assertEquals(4_000L, subject.getTimeout());
+        assertEquals(20_000L, subject.getTimeout());
 
     }
 }

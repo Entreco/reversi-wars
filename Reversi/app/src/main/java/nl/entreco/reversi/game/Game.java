@@ -2,6 +2,7 @@ package nl.entreco.reversi.game;
 
 import android.databinding.ObservableField;
 import android.databinding.ObservableInt;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
@@ -108,6 +109,12 @@ public class Game implements GameCallback {
     @Override
     public void onMoveRejected(@Nullable final Player player) {
         rejected.set(player);
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                rejected.set(null);
+            }
+        }, 10L);
     }
 
 

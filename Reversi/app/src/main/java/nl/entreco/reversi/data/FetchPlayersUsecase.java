@@ -77,7 +77,7 @@ public class FetchPlayersUsecase implements ChildEventListener {
     public void onChildAdded(DataSnapshot dataSnapshot, String s) {
         try {
             final PlayerData player = dataSnapshot.getValue(PlayerData.class);
-            foundPlayer(new RemotePlayer(playersRef, player, dataSnapshot.getKey()));
+            foundPlayer(new RemotePlayer(getDbRef(), player, dataSnapshot.getKey()));
         } catch (Exception gottaCatchEmAll){
             Log.w("FetchPlayersUsecase", "Error getting PlayerData from snapShot", gottaCatchEmAll);
         }

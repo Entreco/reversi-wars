@@ -26,6 +26,7 @@ import nl.entreco.reversi.model.players.RemotePlayer;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -42,11 +43,12 @@ public class FetchPlayersUsecaseTest {
     @Mock private FetchPlayersUsecase.Callback mockCallback;
     @Mock private PlayerData mockPlayerData;
     @Mock private DataSnapshot mockSnapShot;
-
     @Captor private ArgumentCaptor<ChildEventListener> childEventCaptor;
 
     @Before
     public void setUp() throws Exception {
+
+        when(mockDatabaseReference.child(anyString())).thenReturn(mockDatabaseReference);
 
         subject = new FetchPlayersUsecase(mockDatabase){
             @NonNull
@@ -70,7 +72,7 @@ public class FetchPlayersUsecaseTest {
     public void itShouldFetchSevenLocalPlayersWhenCallbackIsRegistered() throws Exception {
         subject.registerCallback(mockCallback);
 
-        verify(mockCallback, times(7)).onPlayerRetrieved(any(Player.class));
+        verify(mockCallback, times(5)).onPlayerRetrieved(any(Player.class));
     }
 
     @Test
@@ -142,6 +144,7 @@ public class FetchPlayersUsecaseTest {
         for(final PlayerData data : remotePlayers) {
             final DataSnapshot dataSnapShot = mock(DataSnapshot.class);
             when(dataSnapShot.getValue(PlayerData.class)).thenReturn(data);
+            when(dataSnapShot.getKey()).thenReturn("key");
             childEventCaptor.getValue().onChildAdded(dataSnapShot, String.valueOf(playerCounter));
             playerCounter++;
         }

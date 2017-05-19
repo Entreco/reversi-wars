@@ -6,7 +6,6 @@ import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
-import android.util.Log;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -30,13 +29,13 @@ public abstract class BasePlayer implements Player {
         executor = Executors.newSingleThreadScheduledExecutor();
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     @NonNull
     ScheduledExecutorService getExecutor() {
         return executor;
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     @NonNull
     Handler getMainLooper() {
         return handler;
@@ -70,7 +69,7 @@ public abstract class BasePlayer implements Player {
     @CallSuper
     @Override
     public final void yourTurn(@NonNull final String board) {
-        executor.schedule(new Runnable() {
+        getExecutor().schedule(new Runnable() {
             @Override
             public void run() {
                 ourTurn();
@@ -84,7 +83,7 @@ public abstract class BasePlayer implements Player {
     public final void onMoveRejected(@NonNull final String board) {
         reject();
 
-        executor.schedule(new Runnable() {
+        getExecutor().schedule(new Runnable() {
             @Override
             public void run() {
                 onRejected(board);
@@ -97,24 +96,18 @@ public abstract class BasePlayer implements Player {
     abstract void handleTurn(@NonNull final String board);
 
     private void reject() {
-        handler.post(new Runnable() {
+        getMainLooper().post(new Runnable() {
             @Override
             public void run() {
                 if (callback != null) {
                     callback.onMoveRejected(BasePlayer.this);
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                           callback.onMoveRejected(null);
-                        }
-                    }, 50);
                 }
             }
         });
     }
 
     private void ourTurn() {
-        handler.post(new Runnable() {
+        getMainLooper().post(new Runnable() {
             @Override
             public void run() {
                 if (callback != null) {
@@ -125,7 +118,7 @@ public abstract class BasePlayer implements Player {
     }
 
     final void submitMove(@NonNull final Move move) {
-        handler.post(new Runnable() {
+        getMainLooper().post(new Runnable() {
             @Override
             public void run() {
                 if (callback != null) {

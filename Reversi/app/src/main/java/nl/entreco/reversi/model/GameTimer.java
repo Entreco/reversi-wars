@@ -1,11 +1,9 @@
 package nl.entreco.reversi.model;
 
 import android.os.Handler;
-import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
-import android.util.Log;
 
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -29,8 +27,8 @@ public class GameTimer implements Runnable {
 
     @Nullable private Player player;
 
-    public GameTimer(@NonNull final ScheduledExecutorService executor) {
-        this.handler = new Handler(Looper.getMainLooper());
+    public GameTimer(@NonNull final ScheduledExecutorService executor, @NonNull final Handler handler) {
+        this.handler = handler;
         this.executor = executor;
     }
 

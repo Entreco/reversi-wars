@@ -2,6 +2,8 @@ package nl.entreco.reversi;
 
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
@@ -37,7 +39,8 @@ public class ReversiActivity extends AppCompatActivity {
 
         final GameSettings settings = new GameSettings();
         final ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
-        final GameTimer timer = new GameTimer(executor);
+        final Handler handler = new Handler(Looper.getMainLooper());
+        final GameTimer timer = new GameTimer(executor, handler);
         final Board board = new Board(settings.getBoardSize());
         final Referee ref = new Referee(settings, timer, board);
         final BoardAdapter adapter = new BoardAdapter(ref);
