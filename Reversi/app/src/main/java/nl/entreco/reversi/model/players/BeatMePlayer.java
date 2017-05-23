@@ -96,6 +96,7 @@ public class BeatMePlayer extends BasePlayer {
         }
     }
 
+    @SuppressWarnings("WrongConstant")
     private int evalBoard(final Board board, int stoneColor) {
         final int winFactor = ((board.getBoardSize() * board.getBoardSize())-board.findEmpty()) / 4;
         final int corners = 100 * evalCorners(board, stoneColor);

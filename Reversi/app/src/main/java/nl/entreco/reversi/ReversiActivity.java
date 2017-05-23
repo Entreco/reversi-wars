@@ -55,8 +55,9 @@ public class ReversiActivity extends AppCompatActivity {
         binding.setArbiter(ref);
         binding.setViewModel(viewModel);
 
-        binding.reversiBoard
-                .setLayoutManager(new GridLayoutManager(this, ref.getBoard().getBoardSize()));
+        binding.reversiBoard.setLayoutManager(new GridLayoutManager(this, ref.getBoard().getBoardSize()));
+//        SlideInUpAnimator animator = new SlideInUpAnimator(new OvershootInterpolator(1f));
+//        binding.reversiBoard.setItemAnimator(animator);
         binding.reversiBoard.setAdapter(adapter);
 
 

@@ -1,6 +1,6 @@
 package nl.entreco.reversi.model;
 
-import android.os.Looper;
+import android.support.annotation.MainThread;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
@@ -74,6 +74,7 @@ public class Referee implements Arbiter, GameTimer.Callback {
 
     }
 
+    @SuppressWarnings("WrongConstant")
     private void switchPlayers() {
         final Player player = playersList.get(currentPlayer.get());
         final @Stone.Color int stoneColor = player.getStoneColor();
@@ -87,7 +88,7 @@ public class Referee implements Arbiter, GameTimer.Callback {
     }
 
     private void notifyPlayer(@NonNull final Player player) {
-        player.yourTurn(board.toJson());
+        gameCallback.notifyNextPlayer(player, board.toJson());
     }
 
     @Override
@@ -101,14 +102,15 @@ public class Referee implements Arbiter, GameTimer.Callback {
         if (this.gameCallback != null) {
             final int score = getScore();
             this.gameCallback.onGameFinished(score);
+            for (final Player player : playersList) {
+                int yourScore = getScore(player.getStoneColor());
+                int opponentScore = player.getStoneColor() * -1;
+                this.gameCallback.notifyPlayerGameFinished(player, yourScore, opponentScore);
+            }
         } else {
             Log.w(TAG, "notifyGameFinished() but gameCallback is null");
         }
 
-        for (final Player player : playersList) {
-            player.onGameFinished(getScore(player.getStoneColor()),
-                    getScore(player.getStoneColor() * -1));
-        }
 
         this.timer.stop();
         this.gameCallback = null;
@@ -133,20 +135,23 @@ public class Referee implements Arbiter, GameTimer.Callback {
     }
 
     @NonNull
+    @MainThread
     @Override
     public List<Stone> onMoveReceived(@NonNull Player player, String move) {
 
-        if (isPlayersTurn(player)) {
-            if (isValidPosition(move)) {
-                final List<Stone> updated = updateBoard(move, player.getStoneColor());
-                if (updated.size() > 0) {
-                    timer.stop();
-                    return updated;
+        if (gameCallback != null) {
+            if (isPlayersTurn(player)) {
+                if (isValidPosition(move)) {
+                    final List<Stone> updated = updateBoard(move, player.getStoneColor());
+                    if (updated.size() > 0) {
+                        timer.stop();
+                        return updated;
+                    }
                 }
-            }
 
-            Log.d(TAG, "onMoveReceived -> onMoveRejected:" + player + " move:" + move);
-            player.onMoveRejected(board.toJson());
+                Log.d(TAG, "onMoveReceived -> onMoveRejected:" + player + " move:" + move);
+                gameCallback.notifyMoveRejected(player, board.toJson());
+            }
         }
         return new ArrayList<>(0);
     }

@@ -1,15 +1,8 @@
 package nl.entreco.reversi.model.players;
 
-import android.os.Handler;
-import android.os.Looper;
 import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.annotation.VisibleForTesting;
-
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 import nl.entreco.reversi.model.GameCallback;
 import nl.entreco.reversi.model.Move;
@@ -18,27 +11,11 @@ import nl.entreco.reversi.model.Stone;
 
 public abstract class BasePlayer implements Player {
 
-    @NonNull private final ScheduledExecutorService executor;
-    @NonNull private final Handler handler;
     @Nullable private GameCallback callback;
     private int stoneColor;
 
     BasePlayer() {
         stoneColor = Stone.WHITE;
-        handler = new Handler(Looper.getMainLooper());
-        executor = Executors.newSingleThreadScheduledExecutor();
-    }
-
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    @NonNull
-    ScheduledExecutorService getExecutor() {
-        return executor;
-    }
-
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    @NonNull
-    Handler getMainLooper() {
-        return handler;
     }
 
     @Override
@@ -69,26 +46,16 @@ public abstract class BasePlayer implements Player {
     @CallSuper
     @Override
     public final void yourTurn(@NonNull final String board) {
-        getExecutor().schedule(new Runnable() {
-            @Override
-            public void run() {
-                ourTurn();
-                handleTurn(board);
-            }
-        }, 50, TimeUnit.MILLISECONDS);
+        ourTurn();
+        handleTurn(board);
+
     }
 
     @CallSuper
     @Override
     public final void onMoveRejected(@NonNull final String board) {
         reject();
-
-        getExecutor().schedule(new Runnable() {
-            @Override
-            public void run() {
-                onRejected(board);
-            }
-        }, 10, TimeUnit.MILLISECONDS);
+        onRejected(board);
     }
 
     abstract void onRejected(@NonNull final String board);
@@ -96,35 +63,20 @@ public abstract class BasePlayer implements Player {
     abstract void handleTurn(@NonNull final String board);
 
     private void reject() {
-        getMainLooper().post(new Runnable() {
-            @Override
-            public void run() {
-                if (callback != null) {
-                    callback.onMoveRejected(BasePlayer.this);
-                }
-            }
-        });
+        if (callback != null) {
+            callback.onMoveRejected(BasePlayer.this);
+        }
     }
 
     private void ourTurn() {
-        getMainLooper().post(new Runnable() {
-            @Override
-            public void run() {
-                if (callback != null) {
-                    callback.setCurrentPlayer(BasePlayer.this);
-                }
-            }
-        });
+        if (callback != null) {
+            callback.setCurrentPlayer(BasePlayer.this);
+        }
     }
 
     final void submitMove(@NonNull final Move move) {
-        getMainLooper().post(new Runnable() {
-            @Override
-            public void run() {
-                if (callback != null) {
-                    callback.submitMove(BasePlayer.this, move);
-                }
-            }
-        });
+        if (callback != null) {
+            callback.submitMove(BasePlayer.this, move);
+        }
     }
 }

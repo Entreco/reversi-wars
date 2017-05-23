@@ -12,4 +12,10 @@ public interface GameCallback {
     void onMoveRejected(@Nullable final Player player);
 
     void onGameFinished(final int score);
+
+    void notifyNextPlayer(@NonNull final Player player, @NonNull final String board);
+
+    void notifyMoveRejected(@NonNull final Player player, @NonNull final String board);
+
+    void notifyPlayerGameFinished(@NonNull final Player player, final int yourScore, final int opponentScore);
 }

@@ -3,10 +3,15 @@ package nl.entreco.reversi.game;
 import android.databinding.ObservableField;
 import android.databinding.ObservableInt;
 import android.os.Handler;
+import android.os.Looper;
+import android.support.annotation.MainThread;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import nl.entreco.reversi.model.Arbiter;
 import nl.entreco.reversi.model.GameCallback;
@@ -30,6 +35,9 @@ public class Game implements GameCallback {
     @NonNull private final BoardAdapter adapter;
     @NonNull private final Arbiter arbiter;
 
+    @NonNull private final Handler main;
+    @NonNull private final ScheduledExecutorService background;
+
     public Game(@NonNull final BoardAdapter adapter, @NonNull final Arbiter arbiter) {
 
         this.adapter = adapter;
@@ -43,6 +51,8 @@ public class Game implements GameCallback {
         this.winner = new ObservableField<>();
         this.current = new ObservableField<>();
         this.rejected = new ObservableField<>();
+        this.main = new Handler(Looper.getMainLooper());
+        this.background = Executors.newSingleThreadScheduledExecutor();
     }
 
     public void startGame(@NonNull final String uuid) {
@@ -80,48 +90,101 @@ public class Game implements GameCallback {
         }
     }
 
+    @MainThread
     @Override
-    public void setCurrentPlayer(@NonNull Player player) {
-        arbiter.startTimer(player);
-        current.set(player);
-        adapter.setCurrentPlayer(player, this);
+    public void setCurrentPlayer(@NonNull final Player player) {
+        main.post(new Runnable() {
+            @Override
+            public void run() {
+                arbiter.startTimer(player);
+                current.set(player);
+                adapter.setCurrentPlayer(player, Game.this);
+            }
+        });
     }
 
 
     @Override
     public void submitMove(@NonNull final Player player, @NonNull final Move move) {
-        final List<Stone> flipped = arbiter.onMoveReceived(player, move.toString());
-        if (flipped.size() > 0) {
+        main.post(new Runnable() {
+            @Override
+            public void run() {
+                final List<Stone> flipped = arbiter.onMoveReceived(player, move.toString());
+                if (flipped.size() > 0) {
 
-            if (player.getStoneColor() == Stone.WHITE) {
-                score1.set(score1.get() + 1 + flipped.size());
-                score2.set(score2.get() - flipped.size());
-            } else {
-                score1.set(score1.get() - flipped.size());
-                score2.set(score2.get() + 1 + flipped.size());
+                    if (player.getStoneColor() == Stone.WHITE) {
+                        score1.set(score1.get() + 1 + flipped.size());
+                        score2.set(score2.get() - flipped.size());
+                    } else {
+                        score1.set(score1.get() - flipped.size());
+                        score2.set(score2.get() + 1 + flipped.size());
+                    }
+
+                    current.set(null);
+                    adapter.update(move, player.getStoneColor());
+                    arbiter.notifyNextPlayer(player);
+                }
             }
-
-            adapter.update(move, player.getStoneColor());
-            arbiter.notifyNextPlayer(player);
-        }
+        });
     }
 
     @Override
     public void onMoveRejected(@Nullable final Player player) {
-        rejected.set(player);
-        new Handler().postDelayed(new Runnable() {
+        main.post(new Runnable() {
             @Override
             public void run() {
-                rejected.set(null);
+                rejected.set(player);
+                main.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        rejected.set(null);
+                    }
+                }, 10L);
             }
-        }, 10L);
+        });
     }
 
 
     @Override
-    public void onGameFinished(int score) {
-        current.set(null);
-        winner.set(score <= Stone.WHITE ? player1.get() : player2.get());
+    public void onGameFinished(final int score) {
+        main.post(new Runnable() {
+            @Override
+            public void run() {
+                current.set(null);
+                winner.set(score <= Stone.WHITE ? player1.get() : player2.get());
+            }
+        });
+    }
+
+    @Override
+    public void notifyNextPlayer(@NonNull final Player player, @NonNull final String board) {
+        background.schedule(new Runnable() {
+            @Override
+            public void run() {
+                player.yourTurn(board);
+            }
+        }, 100, TimeUnit.MILLISECONDS);
+    }
+
+    @Override
+    public void notifyMoveRejected(@NonNull final Player player, @NonNull final String board) {
+        background.schedule(new Runnable() {
+            @Override
+            public void run() {
+                player.onMoveRejected(board);
+            }
+        }, 50, TimeUnit.MILLISECONDS);
+    }
+
+    @Override
+    public void notifyPlayerGameFinished(@NonNull final Player player, final int yourScore,
+                                         final int opponentScore) {
+        main.post(new Runnable() {
+            @Override
+            public void run() {
+                player.onGameFinished(yourScore, opponentScore);
+            }
+        });
     }
 
     public void clear() {

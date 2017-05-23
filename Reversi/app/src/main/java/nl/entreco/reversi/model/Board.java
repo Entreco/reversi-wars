@@ -326,6 +326,7 @@ public class Board extends ArrayList<Stone> {
         return this;
     }
 
+    @SuppressWarnings("WrongConstant")
     public void setupWithData(int[][] board) {
         for (int row = 0; row < board.length; row++) {
             for (int col = 0; col < board[row].length; col++) {

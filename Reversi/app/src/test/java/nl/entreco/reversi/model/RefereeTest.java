@@ -1,8 +1,5 @@
 package nl.entreco.reversi.model;
 
-import android.os.Handler;
-import android.support.annotation.NonNull;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -23,7 +20,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -304,6 +300,7 @@ public class RefereeTest {
         reset(players[0]);
     }
 
+    @SuppressWarnings("WrongConstant")
     private void simulateMoves(List<Stone> stones) {
         when(mockBoard.get(anyInt())).thenReturn(mockStone);
         when(mockStone.color()).thenReturn(Stone.EMPTY);
