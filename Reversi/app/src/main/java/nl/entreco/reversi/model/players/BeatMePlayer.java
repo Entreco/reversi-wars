@@ -18,6 +18,7 @@ import nl.entreco.reversi.model.util.BoardUtil;
 
 public class BeatMePlayer extends BasePlayer {
 
+    private static final int MAX_DEPTH = 4;
     private final Gson gson;
     private List<Move> moveList;
 
@@ -36,7 +37,7 @@ public class BeatMePlayer extends BasePlayer {
         moveList = gameBoard.findAllMoves(getStoneColor());
 
         final MoveValue minimax =
-                minimax(gameBoard, 4, Integer.MIN_VALUE, Integer.MAX_VALUE, getStoneColor(),
+                minimax(gameBoard, MAX_DEPTH, Integer.MIN_VALUE, Integer.MAX_VALUE, getStoneColor(),
                         moveList.get(0));
         final Move best = minimax.move();
         Log.i("EVAL", "new BestMove:" + best + " score:" + minimax.value);
@@ -63,7 +64,6 @@ public class BeatMePlayer extends BasePlayer {
 
                 if (maxi > score) {
                     bestMove = move;
-                    Log.i("EVAL", "NEW BEST MOVE MAXI:" + bestMove + " score will be:" + maxi);
                 }
 
                 score = Math.max(score, maxi);
@@ -71,6 +71,7 @@ public class BeatMePlayer extends BasePlayer {
 
                 if (beta <= alpha) break;
             }
+            Log.i("EVAL", "NEW BEST MOVE MAXI:" + bestMove + " score will be:" + score);
             return new MoveValue(bestMove, score);
         } else {
             // MIN
@@ -83,7 +84,6 @@ public class BeatMePlayer extends BasePlayer {
 
                 if (mini < score) {
                     bestMove = move;
-                    Log.i("EVAL", "NEW BEST MOVE MINI:" + bestMove + " score will be:" + mini);
                 }
 
                 score = Math.min(score, mini);
@@ -91,15 +91,18 @@ public class BeatMePlayer extends BasePlayer {
                 beta = Math.min(beta, score);
                 if (beta <= alpha) break;
             }
+            Log.i("EVAL", "NEW BEST MOVE MINI:" + bestMove + " score will be:" + score);
             return new MoveValue(bestMove, score);
         }
     }
 
     private int evalBoard(final Board board, int stoneColor) {
-        int corners = 100 * evalCorners(board, stoneColor);
-        int safe = 10 * evalSafeStones(board, stoneColor);
-        int stones = 1 * evalScore(board, stoneColor);
-        int eval = corners + safe + stones;
+        final int winFactor = ((board.getBoardSize() * board.getBoardSize())-board.findEmpty()) / 4;
+        final int corners = 100 * evalCorners(board, stoneColor);
+        final int safe = 10 * evalSafeStones(board, stoneColor);
+        final int stones = winFactor * evalScore(board, stoneColor);
+        final int opponentMoves = board.findAllMoves(-1 * stoneColor).size();
+        final int eval = corners + safe + stones - opponentMoves;
         return eval;
     }
 

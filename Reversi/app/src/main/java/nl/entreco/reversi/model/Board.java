@@ -335,4 +335,16 @@ public class Board extends ArrayList<Stone> {
         }
         Log.i("BOARD", toString());
     }
+
+    public int findEmpty() {
+        int empty = 0;
+        for (int row = 0; row < getBoardSize(); row++) {
+            for (int col = 0; col < getBoardSize(); col++) {
+                if(get(getItemPosition(row, col)).color() == Stone.EMPTY) {
+                    empty++;
+                }
+            }
+        }
+        return empty;
+    }
 }
