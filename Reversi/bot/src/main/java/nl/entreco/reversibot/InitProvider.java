@@ -11,8 +11,7 @@ import android.support.annotation.Nullable;
 
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.auth.FirebaseAuth;
 
 public class InitProvider extends ContentProvider {
 
@@ -33,10 +32,8 @@ public class InitProvider extends ContentProvider {
 
     public static <T extends FirebaseBot> void registerBot(@NonNull final T bot,
                                                            @NonNull final String botName) {
-        final DatabaseReference push = FirebaseDatabase.getInstance().getReference("players").push();
-        final String playerUid = push.getKey();
-        bot.init(push, playerUid, botName);
-        push.setValue(bot);
+        final FirebaseAuth auth = FirebaseAuth.getInstance();
+        new RegisterListener(auth, bot, botName).go();
     }
 
     @Override
