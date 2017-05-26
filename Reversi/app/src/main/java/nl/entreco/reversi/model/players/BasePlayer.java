@@ -34,6 +34,11 @@ public abstract class BasePlayer implements Player {
     }
 
     @Override
+    public boolean isLocal() {
+        return true;
+    }
+
+    @Override
     public final int getStoneColor() {
         return stoneColor;
     }

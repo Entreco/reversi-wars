@@ -53,4 +53,9 @@ public class NotStartedPlayer implements Player {
     public boolean isHuman() {
         return false;
     }
+
+    @Override
+    public boolean isLocal() {
+        return false;
+    }
 }

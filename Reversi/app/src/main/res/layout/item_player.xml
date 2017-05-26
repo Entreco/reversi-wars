@@ -18,7 +18,7 @@
         android:paddingEnd="16dp"
         android:gravity="center_vertical"
         android:textSize="22sp"
-        android:drawableEnd="@{player.human ? @drawable/ic_human : @drawable/ic_computer}"
+        android:drawableEnd="@{player.human ? @drawable/ic_human : player.local ? @drawable/ic_local : @drawable/ic_computer}"
         android:text="@{player.name}"
         android:onClick="@{() -> listener.onPlayerSelected(player)}"
         tools:text="Random Bot"

@@ -99,8 +99,28 @@ public class RemotePlayer extends BasePlayer {
     }
 
     @Override
+    public boolean isLocal() {
+        return false;
+    }
+
+    @Override
     public boolean isHuman() {
         return false;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        RemotePlayer that = (RemotePlayer) o;
+
+        return remoteUuid.equals(that.remoteUuid);
+
+    }
+
+    @Override
+    public int hashCode() {
+        return remoteUuid.hashCode();
+    }
 }

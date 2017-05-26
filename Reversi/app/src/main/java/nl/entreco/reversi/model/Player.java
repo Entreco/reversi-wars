@@ -21,5 +21,7 @@ public interface Player {
 
     void setStoneColor(@Stone.Color int stoneColor);
 
+    boolean isLocal();
+
     boolean isHuman();
 }
