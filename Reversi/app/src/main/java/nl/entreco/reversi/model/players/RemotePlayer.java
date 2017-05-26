@@ -23,6 +23,7 @@ public class RemotePlayer extends BasePlayer {
     @NonNull private final PlayerData playerData;
     @NonNull private final String remoteUuid;
     @NonNull private final Gson gson;
+    @NonNull private final PingListener pingListener;
 
     @Nullable private DatabaseReference matchReference;
 
@@ -30,6 +31,8 @@ public class RemotePlayer extends BasePlayer {
         this.playerData = playerData;
         this.remoteUuid = remoteUuid;
         this.playersReference = playersReference.child(remoteUuid);
+        this.pingListener = new PingListener(playerData.name);
+        this.playersReference.child("ping").addValueEventListener(pingListener);
         this.gson = new GsonBuilder().create();
     }
 
@@ -49,6 +52,7 @@ public class RemotePlayer extends BasePlayer {
         String matchKey = matchReference.getKey();
         int points = getPointsForScores(Math.abs(yourScore), Math.abs(opponentScore));
         this.playersReference.child("results").push().setValue(new ReversiResult(matchKey, yourScore, opponentScore, points));
+        this.playersReference.removeEventListener(pingListener);
     }
 
     private int getPointsForScores(int yourScore, int opponentScore) {

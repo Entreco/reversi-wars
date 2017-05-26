@@ -66,6 +66,7 @@ public class ReversiViewModel implements FetchPlayersUsecase.Callback, PlayerSel
     @Override
     public void onPlayerRetrieved(@NonNull Player player) {
         players.add(player);
+        if(!players.contains(player)) {
     }
 
     @Override

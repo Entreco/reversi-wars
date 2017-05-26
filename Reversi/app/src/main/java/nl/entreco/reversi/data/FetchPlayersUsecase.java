@@ -10,6 +10,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import nl.entreco.reversi.api.PlayerData;
 import nl.entreco.reversi.model.Player;
@@ -77,10 +78,35 @@ public class FetchPlayersUsecase implements ChildEventListener {
     public void onChildAdded(DataSnapshot dataSnapshot, String s) {
         try {
             final PlayerData player = dataSnapshot.getValue(PlayerData.class);
-            foundPlayer(new RemotePlayer(getDbRef(), player, dataSnapshot.getKey()));
+            final String playerName = player.name;
+            final String remoteUuid = dataSnapshot.getKey();
+            final RemotePlayer remote = new RemotePlayer(getDbRef(), player, remoteUuid);
+            pingPlayer(remote, remoteUuid, playerName);
+
         } catch (Exception gottaCatchEmAll){
             Log.w("FetchPlayersUsecase", "Error getting PlayerData from snapShot", gottaCatchEmAll);
         }
+    }
+
+    private void pingPlayer(@NonNull final RemotePlayer remotePlayer,
+                            @NonNull final String remoteUuid,
+                            @NonNull final String playerName) {
+        final DatabaseReference pingRef = getDbRef().child(remoteUuid).child("ping");
+        pingRef.setValue("yo dude, you there?");
+        pingRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                final String name = dataSnapshot.getValue(String.class);
+                if(dataSnapshot.exists() && playerName.equals(name) ) {
+                    foundPlayer(remotePlayer);
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                lostPlayer(playerName);
+            }
+        });
     }
 
     @Override
