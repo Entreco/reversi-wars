@@ -52,6 +52,10 @@ public class ReversiViewModel implements FetchPlayersUsecase.Callback, PlayerSel
         remoteUsecase.fetchPlayers(this);
     }
 
+    void clearPlayers() {
+        players.clear();
+    }
+
     @SuppressWarnings("Since15")
     @Override
     public void onPlayerRemoved(@NonNull final String name) {
@@ -65,8 +69,9 @@ public class ReversiViewModel implements FetchPlayersUsecase.Callback, PlayerSel
 
     @Override
     public void onPlayerRetrieved(@NonNull Player player) {
-        players.add(player);
         if(!players.contains(player)) {
+            players.add(player);
+        }
     }
 
     @Override
