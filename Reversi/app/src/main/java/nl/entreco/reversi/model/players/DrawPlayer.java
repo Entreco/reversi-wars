@@ -15,7 +15,7 @@ public class DrawPlayer implements Player {
     @NonNull
     @Override
     public String getName() {
-        return "Draw";
+        return "Tie";
     }
 
     @Override

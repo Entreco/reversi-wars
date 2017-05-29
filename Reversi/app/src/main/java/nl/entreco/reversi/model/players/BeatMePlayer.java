@@ -3,13 +3,12 @@ package nl.entreco.reversi.model.players;
 import android.support.annotation.NonNull;
 import android.support.annotation.VisibleForTesting;
 import android.util.Log;
+import android.util.SparseArray;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import nl.entreco.reversi.model.Board;
 import nl.entreco.reversi.model.Move;
@@ -98,11 +97,13 @@ public class BeatMePlayer extends BasePlayer {
 
     @SuppressWarnings("WrongConstant")
     private int evalBoard(final Board board, int stoneColor) {
-        final int winFactor = ((board.getBoardSize() * board.getBoardSize())-board.findEmpty()) / 4;
-        final int corners = 100 * evalCorners(board, stoneColor);
+        final int boardSize = board.getBoardSize();
+        final int empty = board.findEmpty();
+        final int winFactor = ((boardSize * boardSize)- empty) / 4;
+        final int corners = 1000 * evalCorners(board, stoneColor);
         final int safe = 10 * evalSafeStones(board, stoneColor);
         final int stones = winFactor * evalScore(board, stoneColor);
-        final int opponentMoves = board.findAllMoves(-1 * stoneColor).size();
+        final int opponentMoves = empty * board.findAllMoves(-1 * stoneColor).size();
         final int eval = corners + safe + stones - opponentMoves;
         return eval;
     }
@@ -119,7 +120,7 @@ public class BeatMePlayer extends BasePlayer {
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     int evalSafeStones(final Board board, int stoneColor) {
-        Map<Integer, Stone> safeStones = new HashMap<>();
+        SparseArray<Stone> safeStones = new SparseArray<>();
         new ZigZag(board, safeStones, stoneColor).go();
 
         return safeStones.size();
@@ -128,17 +129,17 @@ public class BeatMePlayer extends BasePlayer {
     private class ZigZag {
         private final Board board;
         private final int size;
-        private final Map<Integer, Stone> safeStones;
+        private final SparseArray<Stone> safeStones;
         private int stoneColor;
 
-        public ZigZag(Board board, Map<Integer, Stone> safeStones, int stoneColor) {
+        ZigZag(Board board, SparseArray<Stone> safeStones, int stoneColor) {
             this.board = board;
             this.size = board.getBoardSize();
             this.safeStones = safeStones;
             this.stoneColor = stoneColor;
         }
 
-        public void go() {
+        void go() {
             topLeft();
             topRight();
             bottomLeft();
@@ -153,24 +154,32 @@ public class BeatMePlayer extends BasePlayer {
             int row = size - 1;
             int col = size - 1;
             loop(row, col, -1, -1);
+            loop(row, col, -1, 0);
+            loop(row, col, 0, -1);
         }
 
         private void bottomLeft() {
             int row = size - 1;
             int col = 0;
             loop(row, col, -1, 1);
+            loop(row, col, -1, 0);
+            loop(row, col, 0, 1);
         }
 
         private void topLeft() {
             int row = 0;
             int col = 0;
             loop(row, col, 1, 1);
+            loop(row, col, 1, 0);
+            loop(row, col, 0, 1);
         }
 
         private void topRight() {
             int row = 0;
             int col = size - 1;
             loop(row, col, 1, -1);
+            loop(row, col, 1, 0);
+            loop(row, col, 0, -1);
         }
 
         private void loop(int row, int col, int a, int b) {
