@@ -21,6 +21,7 @@ import nl.entreco.reversi.model.GameCallback;
 import nl.entreco.reversi.model.Move;
 import nl.entreco.reversi.model.Player;
 import nl.entreco.reversi.model.Stone;
+import nl.entreco.reversi.model.players.DrawPlayer;
 import nl.entreco.reversi.model.players.RandomPlayer;
 import nl.entreco.reversi.model.players.UserPlayer;
 
@@ -175,7 +176,13 @@ public class Game implements GameCallback {
             @Override
             public void run() {
                 current.set(null);
-                winner.set(score <= Stone.WHITE ? player1.get() : player2.get());
+                if(score == 0){
+                    // draw
+                    winner.set(new DrawPlayer());
+                } else {
+                    // we have a winner
+                    winner.set(score <= Stone.WHITE ? player1.get() : player2.get());
+                }
                 matchReference.child("result").setValue(score);
             }
         });
