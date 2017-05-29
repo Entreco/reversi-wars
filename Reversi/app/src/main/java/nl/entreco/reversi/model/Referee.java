@@ -88,7 +88,9 @@ public class Referee implements Arbiter, GameTimer.Callback {
     }
 
     private void notifyPlayer(@NonNull final Player player) {
-        gameCallback.notifyNextPlayer(player, board.toJson());
+        if (gameCallback != null) {
+            gameCallback.notifyNextPlayer(player, board.toJson());
+        }
     }
 
     @Override
@@ -104,7 +106,7 @@ public class Referee implements Arbiter, GameTimer.Callback {
             this.gameCallback.onGameFinished(score);
             for (final Player player : playersList) {
                 int yourScore = getScore(player.getStoneColor());
-                int opponentScore = player.getStoneColor() * -1;
+                int opponentScore = getScore(player.getStoneColor() * -1);
                 this.gameCallback.notifyPlayerGameFinished(player, yourScore, opponentScore);
             }
         } else {

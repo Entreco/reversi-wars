@@ -10,7 +10,7 @@
             android:authorities="${applicationId}.initProvider"
             android:exported="false"
             android:enabled="true"
-            android:name=".InitProvider" />
+            android:name=".ReversiBot" />
 
     </application>
 

@@ -13,7 +13,7 @@ import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
 import com.google.firebase.auth.FirebaseAuth;
 
-public class InitProvider extends ContentProvider {
+public class ReversiBot extends ContentProvider {
 
     private static final String API_KEY = "AIzaSyA7ruSb75KcdYojOy4UDX-JNC_vagp01no";
     private static final String APPLICATION_ID = "reversi-wars";
@@ -39,11 +39,11 @@ public class InitProvider extends ContentProvider {
     @Override
     public void attachInfo(Context context, ProviderInfo providerInfo) {
         if (providerInfo == null) {
-            throw new NullPointerException("InitProvider ProviderInfo cannot be null.");
+            throw new NullPointerException("ReversiBot ProviderInfo cannot be null.");
         }
         // So if the authorities equal the library internal ones, the developer forgot to set his
         // applicationId
-        if ("nl.entreco.reversibot.InitProvider".equals(providerInfo.authority)) {
+        if ("nl.entreco.reversibot.ReversiBot".equals(providerInfo.authority)) {
             throw new IllegalStateException(
                     "Incorrect provider authority in manifest. Most likely due to a "
                             + "missing applicationId variable in application\'s build.gradle.");

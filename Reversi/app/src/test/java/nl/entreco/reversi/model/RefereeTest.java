@@ -21,6 +21,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
@@ -194,7 +195,7 @@ public class RefereeTest {
 
         simulateTimedOut(mockPlayer);
 
-        verify(mockOpponent).yourTurn(anyString());
+        verify(mockGameCallback).notifyNextPlayer(eq(mockOpponent), anyString());
     }
 
     @Test
@@ -221,7 +222,7 @@ public class RefereeTest {
 
         simulateTurn(mockPlayer, "");
 
-        verify(mockPlayer).onMoveRejected(anyString());
+        verify(mockGameCallback).notifyMoveRejected(mockPlayer, "");
     }
 
     @Test
@@ -242,7 +243,7 @@ public class RefereeTest {
 
         simulateTurn(mockPlayer, "[0,0]");
 
-        verify(mockPlayer).onMoveRejected(anyString());
+        verify(mockGameCallback).notifyMoveRejected(eq(mockPlayer), anyString());
     }
 
     @Test
@@ -292,11 +293,12 @@ public class RefereeTest {
         for (final Player player : players) {
             subject.addPlayer(player);
         }
-        subject.startMatch();
+
+        subject.start(mockGameCallback);
 
         verify(mockBoard).start();
-
-        verify(players[0]).yourTurn(anyString());
+        verify(mockGameCallback).notifyNextPlayer(players[0], "");
+        reset(mockGameCallback);
         reset(players[0]);
     }
 

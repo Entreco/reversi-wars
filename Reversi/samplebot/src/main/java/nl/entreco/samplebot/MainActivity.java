@@ -3,7 +3,7 @@ package nl.entreco.samplebot;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
-import nl.entreco.reversibot.InitProvider;
+import nl.entreco.reversibot.ReversiBot;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -12,6 +12,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        InitProvider.registerBot(new SampleBot(), "Entrecodelaco");
+        ReversiBot.registerBot(new SampleBot(), "Entrecodelaco");
     }
 }

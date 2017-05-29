@@ -1,4 +1,4 @@
-package nl.entreco.reversi.data;
+package nl.entreco.reversi;
 
 import android.support.annotation.NonNull;
 
@@ -6,6 +6,7 @@ import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.gson.JsonSyntaxException;
 
 import org.junit.Before;
@@ -27,6 +28,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -43,7 +45,9 @@ public class FetchPlayersUsecaseTest {
     @Mock private FetchPlayersUsecase.Callback mockCallback;
     @Mock private PlayerData mockPlayerData;
     @Mock private DataSnapshot mockSnapShot;
+    @Mock private RemotePlayer mockRemotePlayer;
     @Captor private ArgumentCaptor<ChildEventListener> childEventCaptor;
+    @Captor private ArgumentCaptor<ValueEventListener> valueEventCaptor;
 
     @Before
     public void setUp() throws Exception {
@@ -83,10 +87,24 @@ public class FetchPlayersUsecaseTest {
     }
 
     @Test
-    public void itShouldFetchRemotePlayersWhenCallbackIsRegistered() throws Exception {
+    public void itShouldPingPlayerWhenRetrieved() throws Exception {
         simulateRemotePlayers(Arrays.asList(mockPlayerData));
 
-        verify(mockCallback, times(1)).onPlayerRetrieved(any(RemotePlayer.class));
+        verify(mockDatabaseReference, atLeast(2)).child(anyString());
+    }
+
+    @Test
+    public void itShouldFetchRemotePlayersWhenCallbackIsRegistered() throws Exception {
+        when(mockDatabaseReference.child(anyString())).thenReturn(mockDatabaseReference);
+        when(mockSnapShot.exists()).thenReturn(true);
+
+        subject.registerCallback(mockCallback);
+        subject.pingPlayer(mockRemotePlayer, "uid", "name");
+
+        verify(mockDatabaseReference).addValueEventListener(valueEventCaptor.capture());
+        valueEventCaptor.getValue().onDataChange(mockSnapShot);
+
+        verify(mockCallback).onPlayerRetrieved(any(RemotePlayer.class));
     }
 
     @Test

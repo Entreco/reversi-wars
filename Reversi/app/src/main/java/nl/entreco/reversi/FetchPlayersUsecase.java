@@ -1,4 +1,4 @@
-package nl.entreco.reversi.data;
+package nl.entreco.reversi;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -34,11 +34,11 @@ public class FetchPlayersUsecase implements ChildEventListener {
         void onPlayerRemoved(@NonNull final String name);
     }
 
-    public FetchPlayersUsecase(@NonNull final FirebaseDatabase database) {
+    FetchPlayersUsecase(@NonNull final FirebaseDatabase database) {
         playersRef = database.getReference("players");
     }
 
-    public void registerCallback(@NonNull Callback callback) {
+    void registerCallback(@NonNull Callback callback) {
         this.callback = callback;
 
         foundPlayer(new UserPlayer());
@@ -51,7 +51,7 @@ public class FetchPlayersUsecase implements ChildEventListener {
         getDbRef().addChildEventListener(this);
     }
 
-    public void unregisterCallback(){
+    void unregisterCallback(){
         this.callback = null;
         this.getDbRef().removeEventListener(this);
     }
@@ -88,16 +88,16 @@ public class FetchPlayersUsecase implements ChildEventListener {
         }
     }
 
-    private void pingPlayer(@NonNull final RemotePlayer remotePlayer,
+    void pingPlayer(@NonNull final RemotePlayer remotePlayer,
                             @NonNull final String remoteUuid,
                             @NonNull final String playerName) {
         final DatabaseReference pingRef = getDbRef().child(remoteUuid).child("ping");
-        pingRef.setValue("yo dude, you there?");
+        pingRef.setValue("Yo dude, you there?");
         pingRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                final String name = dataSnapshot.getValue(String.class);
-                if(dataSnapshot.exists() && playerName.equals(name) ) {
+                final String ping = dataSnapshot.getValue(String.class);
+                if(dataSnapshot.exists() && !"Yo dude, you there?".equals(ping) ) {
                     foundPlayer(remotePlayer);
                 }
             }

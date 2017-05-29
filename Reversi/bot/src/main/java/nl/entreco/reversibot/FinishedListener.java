@@ -1,12 +1,14 @@
 package nl.entreco.reversibot;
 
-import com.google.firebase.database.ChildEventListener;
+import android.support.annotation.NonNull;
+
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.ValueEventListener;
 
-class FinishedListener implements ChildEventListener {
+class FinishedListener implements ValueEventListener {
 
-    private final Callback callback;
+    @NonNull private final Callback callback;
 
     interface Callback{
         void onMatchFinished();
@@ -15,24 +17,10 @@ class FinishedListener implements ChildEventListener {
     FinishedListener(Callback callback) {
         this.callback = callback;
     }
-    @Override
-    public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-
-    }
 
     @Override
-    public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-
-    }
-
-    @Override
-    public void onChildRemoved(DataSnapshot dataSnapshot) {
-
-    }
-
-    @Override
-    public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-
+    public void onDataChange(DataSnapshot dataSnapshot) {
+        callback.onMatchFinished();
     }
 
     @Override

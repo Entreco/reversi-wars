@@ -3,12 +3,19 @@ package nl.entreco.samplebot;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
+import com.google.firebase.database.DatabaseReference;
+
 import nl.entreco.reversibot.FirebaseBot;
 
 class SampleBot extends FirebaseBot {
 
     SampleBot() {
         Log.i("SampleBot", "created");
+    }
+
+    @Override
+    public void onPingCheck(@NonNull DatabaseReference ref) {
+        ref.setValue("Fo' sho'");
     }
 
     @Override
@@ -19,7 +26,7 @@ class SampleBot extends FirebaseBot {
 
     @Override
     public void onMatchFinished() {
-        // Pass if we won, or lost
+        super.onMatchFinished();
     }
 
     @Override

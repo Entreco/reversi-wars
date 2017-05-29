@@ -18,9 +18,9 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
 import jp.wasabeef.recyclerview.animators.SlideInUpAnimator;
-import nl.entreco.reversi.data.RemoteUsecase;
 import nl.entreco.reversi.databinding.ActivityReversiBinding;
 import nl.entreco.reversi.game.BoardAdapter;
+import nl.entreco.reversi.game.CreateMatchUsecase;
 import nl.entreco.reversi.game.Game;
 import nl.entreco.reversi.model.Board;
 import nl.entreco.reversi.model.GameSettings;
@@ -48,10 +48,12 @@ public class ReversiActivity extends AppCompatActivity {
         final Board board = new Board(settings.getBoardSize());
         final Referee ref = new Referee(settings, timer, board);
         final BoardAdapter adapter = new BoardAdapter(ref);
-        final Game game = new Game(adapter, ref);
+        final FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
+
+        final Game game = new Game(adapter, ref, new CreateMatchUsecase(firebaseDatabase));
 
         final ReversiViewModel viewModel =
-                new ReversiViewModel(game, new RemoteUsecase(FirebaseDatabase.getInstance()));
+                new ReversiViewModel(game, new FetchPlayersUsecase(firebaseDatabase));
 
         final BottomSheetBehavior<? extends View> behavior = setupBottomSheet(binding, viewModel);
 
@@ -85,8 +87,6 @@ public class ReversiActivity extends AppCompatActivity {
     private void setupBoard(@NonNull final RecyclerView board, BoardAdapter adapter,
                             int boardSize) {
         board.setLayoutManager(new GridLayoutManager(this, boardSize));
-//        SlideInUpAnimator animator = new SlideInUpAnimator(new OvershootInterpolator(1f));
-//        binding.reversiBoard.setItemAnimator(animator);
         board.setAdapter(adapter);
     }
 }

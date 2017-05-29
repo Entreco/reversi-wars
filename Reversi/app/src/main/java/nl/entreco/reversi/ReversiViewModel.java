@@ -8,15 +8,10 @@ import android.support.annotation.NonNull;
 import java.util.function.Predicate;
 
 import me.tatarka.bindingcollectionadapter2.ItemBinding;
-import nl.entreco.reversi.api.MatchData;
-import nl.entreco.reversi.data.CreateMatchUsecase;
-import nl.entreco.reversi.data.FetchPlayersUsecase;
-import nl.entreco.reversi.data.RemoteUsecase;
 import nl.entreco.reversi.game.Game;
 import nl.entreco.reversi.model.Player;
 
-public class ReversiViewModel implements FetchPlayersUsecase.Callback, PlayerSelectedListener,
-        CreateMatchUsecase.Callback {
+public class ReversiViewModel implements FetchPlayersUsecase.Callback, PlayerSelectedListener {
 
     public final ObservableList<Player> players;
     public final ItemBinding<Player> playersBinding =
@@ -27,13 +22,13 @@ public class ReversiViewModel implements FetchPlayersUsecase.Callback, PlayerSel
     public final ObservableField<Player> player2;
 
     @NonNull private final Game newGame;
-    @NonNull private final RemoteUsecase remoteUsecase;
+    @NonNull private final FetchPlayersUsecase fetchPlayersUsecase;
 
     ReversiViewModel(@NonNull final Game game,
-                     @NonNull final RemoteUsecase remoteUsecase) {
+                     @NonNull final FetchPlayersUsecase fetchPlayersUsecase) {
 
         this.newGame = game;
-        this.remoteUsecase = remoteUsecase;
+        this.fetchPlayersUsecase = fetchPlayersUsecase;
         this.game = new ObservableField<>();
         this.player1 = new ObservableField<>();
         this.player2 = new ObservableField<>();
@@ -49,7 +44,7 @@ public class ReversiViewModel implements FetchPlayersUsecase.Callback, PlayerSel
         newGame.clear();
         players.clear();
 
-        remoteUsecase.fetchPlayers(this);
+        fetchPlayersUsecase.registerCallback(this);
     }
 
     void clearPlayers() {
@@ -90,17 +85,14 @@ public class ReversiViewModel implements FetchPlayersUsecase.Callback, PlayerSel
     }
 
     private void startNewGame() {
-        remoteUsecase.createMatch(this, player1.get(), player2.get());
-    }
+        fetchPlayersUsecase.unregisterCallback();
 
-    @Override
-    public void onMatchCreated(@NonNull MatchData matchData,
-                               @NonNull String matchUuid) {
         newGame.setWhitePlayer(player1.get());
         newGame.setBlackPlayer(player2.get());
 
         // Start
         game.set(newGame);
-        newGame.startGame(matchUuid);
+        newGame.startGame();
     }
+
 }

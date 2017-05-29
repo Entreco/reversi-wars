@@ -6,10 +6,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.util.UUID;
-
-import nl.entreco.reversi.data.FetchPlayersUsecase;
-import nl.entreco.reversi.data.RemoteUsecase;
 import nl.entreco.reversi.game.Game;
 import nl.entreco.reversi.model.Player;
 
@@ -21,11 +17,8 @@ import static org.mockito.Mockito.verify;
 @RunWith(MockitoJUnitRunner.class)
 public class ReversiViewModelTest {
 
-    private static final String GAME_UID = UUID.randomUUID().toString();
-
     @InjectMocks ReversiViewModel subject;
     @Mock Game mockGame;
-    @Mock RemoteUsecase mockRemoteUsecase;
     @Mock FetchPlayersUsecase mockFetchPlayersUsecase;
 
     @Mock private Player mockPlayer1;
@@ -35,7 +28,7 @@ public class ReversiViewModelTest {
     public void itShouldFetchPlayers() throws Exception {
         subject.fetchPlayers();
 
-        verify(mockRemoteUsecase).fetchPlayers(subject);
+        verify(mockFetchPlayersUsecase).registerCallback(subject);
     }
 
     @Test
@@ -77,7 +70,7 @@ public class ReversiViewModelTest {
         subject.onPlayerSelected(mockPlayer1);
         subject.onPlayerSelected(mockPlayer2);
 
-        verify(mockRemoteUsecase).createMatch(subject, mockPlayer1, mockPlayer2);
+        verify(mockFetchPlayersUsecase).unregisterCallback();
     }
 
     @Test

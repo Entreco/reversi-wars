@@ -73,7 +73,6 @@ public class RandomPlayerTest {
     public void itShouldTryAgainWhenMoveRejected() throws Exception {
         simulateRejected("");
         verify(mockGameCallback).onMoveRejected(subject);
-        simulateTurn("");
         verify(mockGameCallback).setCurrentPlayer(subject);
     }
 

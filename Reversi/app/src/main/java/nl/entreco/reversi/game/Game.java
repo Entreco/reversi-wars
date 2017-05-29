@@ -8,11 +8,14 @@ import android.support.annotation.MainThread;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import com.google.firebase.database.DatabaseReference;
+
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import nl.entreco.reversi.data.History;
 import nl.entreco.reversi.model.Arbiter;
 import nl.entreco.reversi.model.GameCallback;
 import nl.entreco.reversi.model.Move;
@@ -34,14 +37,19 @@ public class Game implements GameCallback {
 
     @NonNull private final BoardAdapter adapter;
     @NonNull private final Arbiter arbiter;
+    @NonNull private final CreateMatchUsecase createMatchUsecase;
 
     @NonNull private final Handler main;
     @NonNull private final ScheduledExecutorService background;
 
-    public Game(@NonNull final BoardAdapter adapter, @NonNull final Arbiter arbiter) {
+    @Nullable private DatabaseReference matchReference;
+
+    public Game(@NonNull final BoardAdapter adapter, @NonNull final Arbiter arbiter, @NonNull final
+                CreateMatchUsecase createMatchUsecase) {
 
         this.adapter = adapter;
         this.arbiter = arbiter;
+        this.createMatchUsecase = createMatchUsecase;
 
         this.player1 = new ObservableField<>();
         this.player2 = new ObservableField<>();
@@ -51,17 +59,29 @@ public class Game implements GameCallback {
         this.winner = new ObservableField<>();
         this.current = new ObservableField<>();
         this.rejected = new ObservableField<>();
-        this.main = new Handler(Looper.getMainLooper());
-        this.background = Executors.newSingleThreadScheduledExecutor();
+        this.main = setupHandler();
+        this.background = setupScheduler();
     }
 
-    public void startGame(@NonNull final String uuid) {
+    @NonNull
+    ScheduledExecutorService setupScheduler() {
+        return Executors.newSingleThreadScheduledExecutor();
+    }
 
+    @NonNull
+    Handler setupHandler() {
+        return new Handler(Looper.getMainLooper());
+    }
+
+    public void startGame() {
         addDefaultPlayersIfEmpty();
+
+        matchReference = createMatchUsecase.createRemoteMatch(player1.get(), player2.get());
+
         this.winner.set(null);
 
-        this.player1.get().onJoinedGame(uuid);
-        this.player2.get().onJoinedGame(uuid);
+        this.player1.get().onJoinedGame(matchReference.getKey());
+        this.player2.get().onJoinedGame(matchReference.getKey());
 
         this.arbiter.addPlayer(player1.get());
         this.arbiter.addPlayer(player2.get());
@@ -120,6 +140,10 @@ public class Game implements GameCallback {
                         score2.set(score2.get() + 1 + flipped.size());
                     }
 
+                    if (matchReference != null) {
+                        matchReference.child("history").push().setValue(new History(player, move, score1.get(), score2.get()));
+                    }
+
                     current.set(null);
                     adapter.update(move, player.getStoneColor());
                     arbiter.notifyNextPlayer(player);
@@ -152,6 +176,7 @@ public class Game implements GameCallback {
             public void run() {
                 current.set(null);
                 winner.set(score <= Stone.WHITE ? player1.get() : player2.get());
+                matchReference.child("result").setValue(score);
             }
         });
     }

@@ -23,7 +23,6 @@ public class RemotePlayer extends BasePlayer {
     @NonNull private final PlayerData playerData;
     @NonNull private final String remoteUuid;
     @NonNull private final Gson gson;
-    @NonNull private final PingListener pingListener;
 
     @Nullable private DatabaseReference matchReference;
 
@@ -31,8 +30,6 @@ public class RemotePlayer extends BasePlayer {
         this.playerData = playerData;
         this.remoteUuid = remoteUuid;
         this.playersReference = playersReference.child(remoteUuid);
-        this.pingListener = new PingListener(playerData.name);
-        this.playersReference.child("ping").addValueEventListener(pingListener);
         this.gson = new GsonBuilder().create();
     }
 
@@ -40,9 +37,8 @@ public class RemotePlayer extends BasePlayer {
     public void onJoinedGame(@NonNull String gameUuid) {
         super.onJoinedGame(gameUuid);
         // Create new Node to hold our moves
-        this.matchReference = this.playersReference.child("matches").push();
+        this.matchReference = this.playersReference.child("matches").child(gameUuid);
         this.matchReference.child("stoneColor").setValue(getStoneColor());
-        this.matchReference.child("matchId").setValue(gameUuid);
     }
 
     @Override
@@ -51,8 +47,7 @@ public class RemotePlayer extends BasePlayer {
         // Notify
         String matchKey = matchReference.getKey();
         int points = getPointsForScores(Math.abs(yourScore), Math.abs(opponentScore));
-        this.playersReference.child("results").push().setValue(new ReversiResult(matchKey, yourScore, opponentScore, points));
-        this.playersReference.removeEventListener(pingListener);
+        this.playersReference.child("results").child(matchKey).setValue(new ReversiResult(yourScore, opponentScore, points));
     }
 
     private int getPointsForScores(int yourScore, int opponentScore) {

@@ -16,7 +16,7 @@ class ReloadCallback extends BottomSheetBehavior.BottomSheetCallback {
     public void onStateChanged(@NonNull View bottomSheet, int newState) {
         if(newState == BottomSheetBehavior.STATE_EXPANDED){
             viewModel.fetchPlayers();
-        } else {
+        } else if(newState != BottomSheetBehavior.STATE_DRAGGING && newState != BottomSheetBehavior.STATE_SETTLING){
             viewModel.clearPlayers();
         }
     }
